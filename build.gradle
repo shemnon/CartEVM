@@ -1,0 +1,18 @@
+plugins {
+    id 'java'
+}
+
+group 'com.hedera.cartevm'
+version '0.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'info.picocli:picocli:4.6.1'
+}
+
+test {
+    useJUnitPlatform()
+}
