@@ -2,7 +2,7 @@ package com.hedera.cartevm;
 
 /*-
  * ‌
- * Hedera Services Node
+ * CartEVM
  * ​
  * Copyright (C) 2021 Hedera Hashgraph, LLC
  * ​
@@ -20,6 +20,12 @@ package com.hedera.cartevm;
  * ‍
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import picocli.CommandLine;
 
 @CommandLine.Command(
@@ -37,18 +43,88 @@ import picocli.CommandLine;
 public class CartEVM implements Runnable {
 
   @CommandLine.Option(
-      names = {"--inner-size"},
+      names = {"--unrolled"},
       paramLabel = "int",
-      description = "Size of inner loop repetition")
-  private final Integer innerSize = 10;
+      description = "Number of unrolled iterations")
+  private final Integer unrolled = 1;
 
-  public static int main(String[] args) {
+  @CommandLine.Option(
+      names = {"--loop"},
+      paramLabel = "int",
+      description = "Number of loop iterations")
+  private final Integer loops = 10;
+
+  @CommandLine.Option(
+      names = {"--gas-limit"},
+      paramLabel = "long",
+      description = "Number of loop iterations")
+  private final Long gasLimit = 10_000_000L;
+
+  @CommandLine.Option(
+      names = {"--steps"},
+      paramLabel = "int",
+      description = "Number of steps to combine per loop")
+  private final Integer steps = 2;
+
+  @CommandLine.Option(
+      names = {"--filler"},
+      description = "Generate Filler")
+  private final Boolean filler = false;
+
+  @CommandLine.Option(
+      names = {"--output-dir"},
+      paramLabel = "<dir>",
+      description = "Directory to write Ethereum test fillers")
+  private final File outDir = new File("vmCartEVM");
+
+  @CommandLine.Option(
+      names = {"--local"},
+      description = "Execute in embedded EVM")
+  private final Boolean local = false;
+
+  @CommandLine.Option(
+      names = {"--hedera"},
+      description = "Execute hedera test instance")
+  private final Boolean hedera = false;
+
+  public static void main(String[] args) {
     CartEVM cartevm = new CartEVM();
 
     CommandLine commandLine = new CommandLine(cartevm);
-    return commandLine.execute(args);
+    commandLine.execute(args);
+  }
+
+  public void createFiller(List<Step> candidates, List<Step> chosen, int moreSteps)
+      throws IOException {
+    if (moreSteps < 1) {
+      FillerGenerator fillerGenerator = new FillerGenerator(chosen, unrolled, loops, gasLimit);
+      System.out.println(fillerGenerator.getName());
+      Path outputFile = outDir.toPath().resolve(fillerGenerator.getName() + "Filler.yml");
+      System.out.println(outputFile);
+      Files.writeString(outputFile, fillerGenerator.generate());
+    } else {
+      for (Step step : candidates) {
+        chosen.add(step);
+        createFiller(candidates, chosen, moreSteps - 1);
+        chosen.remove(chosen.size() - 1);
+      }
+    }
   }
 
   @Override
-  public void run() {}
+  public void run() {
+    try {
+      if (filler) {
+        createFiller(Step.steps, new ArrayList<>(steps), steps);
+      }
+      if (local) {
+        System.out.println("Local Execution Not Implemented Yet");
+      }
+      if (hedera) {
+        System.out.println("Heera Execution Not Implemented Yet");
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 }

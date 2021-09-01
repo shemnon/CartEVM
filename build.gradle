@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'application'
+    id 'com.diffplug.spotless' version '5.14.2'
 }
 
 group 'com.hedera.cartevm'
@@ -11,8 +13,21 @@ repositories {
 
 dependencies {
     implementation 'info.picocli:picocli:4.6.1'
+    implementation 'com.google.guava:guava:30.1.1-jre'
 }
 
-test {
-    useJUnitPlatform()
+spotless {
+    java {
+        // This path needs to be relative to each project
+        target '**/src/*/java/**/*.java'
+        removeUnusedImports()
+        googleJavaFormat('1.10.0')
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+application {
+    mainClass = 'com.hedera.cartevm.CartEVM'
+    applicationName = 'cartevm'
 }
