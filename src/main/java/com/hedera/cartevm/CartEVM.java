@@ -94,34 +94,43 @@ public class CartEVM implements Runnable {
     commandLine.execute(args);
   }
 
-  public void createFiller(List<Step> candidates, List<Step> chosen, int moreSteps)
-      throws IOException {
+  public void runCase(List<Step> candidates, List<Step> chosen, int moreSteps) throws IOException {
     if (moreSteps < 1) {
-      FillerGenerator fillerGenerator = new FillerGenerator(chosen, unrolled, loops, gasLimit);
-      System.out.println(fillerGenerator.getName());
-      Path outputFile = outDir.toPath().resolve(fillerGenerator.getName() + "Filler.yml");
-      System.out.println(outputFile);
-      Files.writeString(outputFile, fillerGenerator.generate());
+      createFiller(chosen);
+      runLocal(chosen);
     } else {
       for (Step step : candidates) {
         chosen.add(step);
-        createFiller(candidates, chosen, moreSteps - 1);
+        runCase(candidates, chosen, moreSteps - 1);
         chosen.remove(chosen.size() - 1);
       }
     }
   }
 
+  private void createFiller(List<Step> chosen) throws IOException {
+    if (!filler) {
+      return;
+    }
+    FillerGenerator fillerGenerator = new FillerGenerator(chosen, unrolled, loops, gasLimit);
+    System.out.println(fillerGenerator.getName());
+    Path outputFile = outDir.toPath().resolve(fillerGenerator.getName() + "Filler.yml");
+    System.out.println(outputFile);
+    Files.writeString(outputFile, fillerGenerator.generate());
+  }
+
+  private void runLocal(List<Step> chosen) throws IOException {
+    if (!local) {
+      return;
+    }
+    new LocalRunner(chosen, unrolled, loops, gasLimit).execute();
+  }
+
   @Override
   public void run() {
     try {
-      if (filler) {
-        createFiller(Step.steps, new ArrayList<>(steps), steps);
-      }
-      if (local) {
-        System.out.println("Local Execution Not Implemented Yet");
-      }
+      runCase(Step.steps, new ArrayList<>(steps), steps);
       if (hedera) {
-        System.out.println("Heera Execution Not Implemented Yet");
+        System.out.println("Hedera Execution Not Implemented Yet");
       }
     } catch (IOException e) {
       e.printStackTrace();
