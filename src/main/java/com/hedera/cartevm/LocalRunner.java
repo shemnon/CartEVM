@@ -8,7 +8,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.apache.tuweni.bytes.Bytes;
@@ -28,6 +34,9 @@ import org.hyperledger.besu.evm.WorldUpdater;
 
 public class LocalRunner {
 
+  static final Address SENDER = Address.fromHexString("12345678");
+  static final Address RECEIVER = Address.fromHexString("9abcdef0");
+  static final Map<String, String> bytecodeCache = new HashMap<>();
   private static final String template =
       """
         {
@@ -39,9 +48,6 @@ public class LocalRunner {
           %5$s
         }
         """;
-  static final Address SENDER = Address.fromHexString("12345678");
-  static final Address RECEIVER = Address.fromHexString("9abcdef0");
-  static final Map<String, String> bytecodeCache = new HashMap<>();
 
   final List<Step> steps;
   final int unrolledLoopSize;

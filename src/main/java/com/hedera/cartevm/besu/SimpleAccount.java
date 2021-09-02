@@ -20,7 +20,7 @@ import org.hyperledger.besu.evm.MutableAccount;
 public class SimpleAccount implements EvmAccount, MutableAccount {
 
   private final Account parent;
-
+  private final Map<UInt256, UInt256> storage = new HashMap<>();
   private Address address;
   private final Supplier<Hash> addressHash =
       Suppliers.memoize(() -> address == null ? Hash.ZERO : Hash.hash(address));
@@ -29,7 +29,6 @@ public class SimpleAccount implements EvmAccount, MutableAccount {
   private Bytes code;
   private Supplier<Hash> codeHash =
       Suppliers.memoize(() -> code == null ? Hash.EMPTY : Hash.hash(code));
-  private final Map<UInt256, UInt256> storage = new HashMap<>();
 
   public SimpleAccount(final Address address, final long nonce, final Wei balance) {
     this(null, address, nonce, balance, Bytes.EMPTY);
@@ -64,13 +63,29 @@ public class SimpleAccount implements EvmAccount, MutableAccount {
   }
 
   @Override
+  public void setNonce(final long value) {
+    nonce = value;
+  }
+
+  @Override
   public Wei getBalance() {
     return balance;
   }
 
   @Override
+  public void setBalance(final Wei value) {
+    balance = value;
+  }
+
+  @Override
   public Bytes getCode() {
     return code;
+  }
+
+  @Override
+  public void setCode(final Bytes code) {
+    this.code = code;
+    codeHash = Suppliers.memoize(() -> this.code == null ? Hash.EMPTY : Hash.hash(this.code));
   }
 
   @Override
@@ -105,22 +120,6 @@ public class SimpleAccount implements EvmAccount, MutableAccount {
   @Override
   public MutableAccount getMutable() throws ModificationNotAllowedException {
     return this;
-  }
-
-  @Override
-  public void setNonce(final long value) {
-    nonce = value;
-  }
-
-  @Override
-  public void setBalance(final Wei value) {
-    balance = value;
-  }
-
-  @Override
-  public void setCode(final Bytes code) {
-    this.code = code;
-    codeHash = Suppliers.memoize(() -> this.code == null ? Hash.EMPTY : Hash.hash(this.code));
   }
 
   @Override

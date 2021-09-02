@@ -173,75 +173,9 @@ public class Step {
   public static final String OP_SELFDESTRUCT = "FF";
 
   public static final List<Step> steps = new ArrayList<>();
-
-  final String name;
-  final String globalSetupCode;
-  final String globalCleanupCode;
-  final String localSetupCode;
-  final String localCleanupCode;
-  final String executionCode;
-
-  public Step(String name, String localSetupCode, String localCleanupCode, String executionCode) {
-    this(name, "", "", localSetupCode, localCleanupCode, executionCode);
-  }
-
-  public Step(
-      String name,
-      String globalSetupCode,
-      String globalCleanupCode,
-      String localSetupCode,
-      String localCleanupCode,
-      String executionCode) {
-    this.name = name;
-    this.globalSetupCode = globalSetupCode;
-    this.globalCleanupCode = globalCleanupCode;
-    this.localSetupCode = localSetupCode;
-    this.localCleanupCode = localCleanupCode;
-    this.executionCode = executionCode;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public String getGlobalSetupCode() {
-    return globalSetupCode;
-  }
-
-  public String getGlobalCleanupCode() {
-    return globalCleanupCode;
-  }
-
-  public String getLocalSetupCode() {
-    return localSetupCode;
-  }
-
-  public String getLocalCleanupCode() {
-    return localCleanupCode;
-  }
-
-  public String getExecutionCode() {
-    return executionCode;
-  }
-
   static final int NUM_PUSH0 = Integer.parseInt(OP_PUSH1, 16) - 1;
   static final int NUM_DUP0 = Integer.parseInt(OP_DUP1, 16) - 1;
   static final int NUM_SWAP0 = Integer.parseInt(OP_SWAP1, 16) - 1;
-
-  static String push(String... values) {
-    StringBuilder sb = new StringBuilder();
-
-    for (var value : values) {
-      checkNotNull(value);
-      checkState(value.length() > 0, "Value must be non-empty");
-      checkState(value.length() <= 64, "Value must be 32 bytes or less");
-      checkState(value.length() % 2 == 0, "Value must be two-nybble bytes");
-
-      sb.append(Integer.toHexString(NUM_PUSH0 + value.length() / 2));
-      sb.append(value);
-    }
-    return sb.toString();
-  }
 
   static {
     String pushData = "0102030405060708091011121314151617181920212223242526272829303132";
@@ -493,5 +427,70 @@ public class Step {
     steps.add(new Step("balance_gas", OP_GAS, OP_POP, OP_BALANCE));
     steps.add(new Step("sload_gas", OP_GAS, OP_POP, OP_SLOAD));
     steps.add(new Step("sstore_gas", OP_GAS + OP_GAS, "", OP_SSTORE));
+  }
+
+  final String name;
+  final String globalSetupCode;
+  final String globalCleanupCode;
+  final String localSetupCode;
+  final String localCleanupCode;
+  final String executionCode;
+
+  public Step(String name, String localSetupCode, String localCleanupCode, String executionCode) {
+    this(name, "", "", localSetupCode, localCleanupCode, executionCode);
+  }
+
+  public Step(
+      String name,
+      String globalSetupCode,
+      String globalCleanupCode,
+      String localSetupCode,
+      String localCleanupCode,
+      String executionCode) {
+    this.name = name;
+    this.globalSetupCode = globalSetupCode;
+    this.globalCleanupCode = globalCleanupCode;
+    this.localSetupCode = localSetupCode;
+    this.localCleanupCode = localCleanupCode;
+    this.executionCode = executionCode;
+  }
+
+  static String push(String... values) {
+    StringBuilder sb = new StringBuilder();
+
+    for (var value : values) {
+      checkNotNull(value);
+      checkState(value.length() > 0, "Value must be non-empty");
+      checkState(value.length() <= 64, "Value must be 32 bytes or less");
+      checkState(value.length() % 2 == 0, "Value must be two-nybble bytes");
+
+      sb.append(Integer.toHexString(NUM_PUSH0 + value.length() / 2));
+      sb.append(value);
+    }
+    return sb.toString();
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getGlobalSetupCode() {
+    return globalSetupCode;
+  }
+
+  public String getGlobalCleanupCode() {
+    return globalCleanupCode;
+  }
+
+  public String getLocalSetupCode() {
+    return localSetupCode;
+  }
+
+  public String getLocalCleanupCode() {
+    return localCleanupCode;
+  }
+
+  public String getExecutionCode() {
+    return executionCode;
   }
 }
