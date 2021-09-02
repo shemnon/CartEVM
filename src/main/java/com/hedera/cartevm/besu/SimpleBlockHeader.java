@@ -15,7 +15,12 @@
  */
 package com.hedera.cartevm.besu;
 
+import static org.hyperledger.besu.datatypes.Hash.ZERO;
+
+import java.util.Optional;
 import org.apache.tuweni.bytes.Bytes;
+import org.hyperledger.besu.datatypes.Address;
+import org.hyperledger.besu.datatypes.Wei;
 import org.hyperledger.besu.plugin.data.BlockHeader;
 import org.hyperledger.besu.plugin.data.Hash;
 import org.hyperledger.besu.plugin.data.Quantity;
@@ -24,42 +29,42 @@ public class SimpleBlockHeader implements BlockHeader {
 
   @Override
   public Hash getParentHash() {
-    return null;
+    return ZERO;
   }
 
   @Override
   public Hash getOmmersHash() {
-    return null;
+    return ZERO;
   }
 
   @Override
   public org.hyperledger.besu.plugin.data.Address getCoinbase() {
-    return null;
+    return Address.ZERO;
   }
 
   @Override
   public Hash getStateRoot() {
-    return null;
+    return ZERO;
   }
 
   @Override
   public Hash getTransactionsRoot() {
-    return null;
+    return ZERO;
   }
 
   @Override
   public Hash getReceiptsRoot() {
-    return null;
+    return ZERO;
   }
 
   @Override
   public Bytes getLogsBloom() {
-    return null;
+    return Bytes.EMPTY;
   }
 
   @Override
   public Quantity getDifficulty() {
-    return null;
+    return Wei.ONE;
   }
 
   @Override
@@ -84,12 +89,12 @@ public class SimpleBlockHeader implements BlockHeader {
 
   @Override
   public Bytes getExtraData() {
-    return null;
+    return Bytes.EMPTY;
   }
 
   @Override
   public Hash getMixHash() {
-    return null;
+    return ZERO;
   }
 
   @Override
@@ -99,6 +104,11 @@ public class SimpleBlockHeader implements BlockHeader {
 
   @Override
   public Hash getBlockHash() {
-    return null;
+    return ZERO;
+  }
+
+  @Override
+  public Optional<Long> getBaseFee() {
+    return Optional.of(7L);
   }
 }

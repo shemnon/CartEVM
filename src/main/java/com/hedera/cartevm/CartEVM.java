@@ -55,6 +55,18 @@ public class CartEVM implements Runnable {
   private final Integer loops = 10;
 
   @CommandLine.Option(
+      names = {"--repeat"},
+      paramLabel = "int",
+      description = "Number of times to repeat the whole benchmark")
+  private final Integer repeat = 1;
+
+  @CommandLine.Option(
+      names = {"--verbose"},
+      paramLabel = "boolean",
+      description = "Report on all runs, not just the last one")
+  private final Boolean verbose = false;
+
+  @CommandLine.Option(
       names = {"--gas-limit"},
       paramLabel = "long",
       description = "Number of loop iterations")
@@ -94,20 +106,21 @@ public class CartEVM implements Runnable {
     commandLine.execute(args);
   }
 
-  public void runCase(List<Step> candidates, List<Step> chosen, int moreSteps) throws IOException {
+  public void runCase(List<Step> candidates, List<Step> chosen, int moreSteps, boolean verbose)
+      throws IOException {
     if (moreSteps < 1) {
-      createFiller(chosen);
-      runLocal(chosen);
+      createFiller(chosen, verbose);
+      runLocal(chosen, verbose);
     } else {
       for (Step step : candidates) {
         chosen.add(step);
-        runCase(candidates, chosen, moreSteps - 1);
+        runCase(candidates, chosen, moreSteps - 1, verbose);
         chosen.remove(chosen.size() - 1);
       }
     }
   }
 
-  private void createFiller(List<Step> chosen) throws IOException {
+  private void createFiller(List<Step> chosen, boolean verbose) throws IOException {
     if (!filler) {
       return;
     }
@@ -118,17 +131,19 @@ public class CartEVM implements Runnable {
     Files.writeString(outputFile, fillerGenerator.generate());
   }
 
-  private void runLocal(List<Step> chosen) throws IOException {
+  private void runLocal(List<Step> chosen, boolean verbose) {
     if (!local) {
       return;
     }
-    new LocalRunner(chosen, unrolled, loops, gasLimit).execute();
+    new LocalRunner(chosen, unrolled, loops, gasLimit).execute(verbose);
   }
 
   @Override
   public void run() {
     try {
-      runCase(Step.steps, new ArrayList<>(steps), steps);
+      for (int i = repeat; i > 0; i--) {
+        runCase(Step.steps, new ArrayList<>(steps), steps, i == 1);
+      }
       if (hedera) {
         System.out.println("Hedera Execution Not Implemented Yet");
       }

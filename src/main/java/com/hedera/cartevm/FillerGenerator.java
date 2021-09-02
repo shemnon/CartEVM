@@ -109,7 +109,6 @@ public class FillerGenerator {
 
   public String generate() {
     StringBuffer inner = new StringBuffer("verbatim_0i_0o(hex\"");
-    steps.forEach(step -> inner.append(step.globalSetupCode));
 
     List<Step> backwardsSteps = new ArrayList<>(steps);
     Collections.reverse(backwardsSteps);

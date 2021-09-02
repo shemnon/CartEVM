@@ -225,61 +225,273 @@ public class Step {
   }
 
   static final int NUM_PUSH0 = Integer.parseInt(OP_PUSH1, 16) - 1;
+  static final int NUM_DUP0 = Integer.parseInt(OP_DUP1, 16) - 1;
+  static final int NUM_SWAP0 = Integer.parseInt(OP_SWAP1, 16) - 1;
 
-  static String push(String value) {
-    checkNotNull(value);
-    checkState(value.length() > 0, "Value must be non-empty");
-    checkState(value.length() <= 64, "Value must be 32 bytes or less");
-    checkState(value.length() % 2 == 0, "Value must be two-nybble bytes");
+  static String push(String... values) {
+    StringBuilder sb = new StringBuilder();
 
-    return Integer.toHexString(NUM_PUSH0 + value.length() / 2) + value;
+    for (var value : values) {
+      checkNotNull(value);
+      checkState(value.length() > 0, "Value must be non-empty");
+      checkState(value.length() <= 64, "Value must be 32 bytes or less");
+      checkState(value.length() % 2 == 0, "Value must be two-nybble bytes");
+
+      sb.append(Integer.toHexString(NUM_PUSH0 + value.length() / 2));
+      sb.append(value);
+    }
+    return sb.toString();
   }
 
   static {
-    steps.add(new Step("add_small", push("02") + push("02"), OP_POP, OP_ADD));
-    steps.add(new Step("mul_small", push("02") + push("02"), OP_POP, OP_MUL));
-    steps.add(new Step("sub_small", push("02") + push("02"), OP_POP, OP_SUB));
-    steps.add(new Step("div_small", push("02") + push("02"), OP_POP, OP_DIV));
-    steps.add(new Step("sdiv_small", push("02") + push("02"), OP_POP, OP_SDIV));
-    steps.add(new Step("mod_small", push("02") + push("02"), OP_POP, OP_MOD));
-    steps.add(new Step("smod_small", push("02") + push("02"), OP_POP, OP_SMOD));
-    steps.add(new Step("addmod_small", push("02") + push("02") + push("02"), OP_POP, OP_ADDMOD));
-    steps.add(new Step("mulmod_small", push("02") + push("02") + push("02"), OP_POP, OP_MULMOD));
-    steps.add(new Step("exp_small", push("02") + push("02"), OP_POP, OP_EXP));
-    steps.add(new Step("signextend_small", push("00") + push("f8"), OP_POP, OP_SIGNEXTEND));
-    steps.add(new Step("lt", push("01") + push("02"), OP_POP, OP_LT));
-    steps.add(new Step("gt", push("01") + push("02"), OP_POP, OP_GT));
-    steps.add(new Step("slt", push("01") + push("02"), OP_POP, OP_SLT));
-    steps.add(new Step("sgt", push("01") + push("02"), OP_POP, OP_SGT));
-    steps.add(new Step("eq", push("01") + push("02"), OP_POP, OP_EQ));
+    String pushData = "0102030405060708091011121314151617181920212223242526272829303132";
+    steps.add(new Step("add_small", push("02", "02"), OP_POP, OP_ADD));
+    steps.add(new Step("mul_small", push("02", "02"), OP_POP, OP_MUL));
+    steps.add(new Step("sub_small", push("02", "02"), OP_POP, OP_SUB));
+    steps.add(new Step("div_small", push("02", "02"), OP_POP, OP_DIV));
+    steps.add(new Step("sdiv_small", push("02", "02"), OP_POP, OP_SDIV));
+    steps.add(new Step("mod_small", push("02", "02"), OP_POP, OP_MOD));
+    steps.add(new Step("smod_small", push("02", "02"), OP_POP, OP_SMOD));
+    steps.add(new Step("addmod_small", push("02", "02", "02"), OP_POP, OP_ADDMOD));
+    steps.add(new Step("mulmod_small", push("02", "02", "02"), OP_POP, OP_MULMOD));
+    steps.add(new Step("exp_small", push("02", "02"), OP_POP, OP_EXP));
+    steps.add(new Step("signextend_small", push("f8", "00"), OP_POP, OP_SIGNEXTEND));
+    steps.add(new Step("lt", push("02", "01"), OP_POP, OP_LT));
+    steps.add(new Step("gt", push("02", "01"), OP_POP, OP_GT));
+    steps.add(new Step("slt", push("02", "01"), OP_POP, OP_SLT));
+    steps.add(new Step("sgt", push("02", "01"), OP_POP, OP_SGT));
+    steps.add(new Step("eq", push("02", "01"), OP_POP, OP_EQ));
     steps.add(new Step("isZero_zero", push("00"), OP_POP, OP_ISZERO));
     steps.add(new Step("isZero_small", push("01"), OP_POP, OP_ISZERO));
     steps.add(
         new Step(
             "and",
-            push("3333333333333333333333333333333333333333333333333333333333333333")
-                + push("cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"),
+            push(
+                "3333333333333333333333333333333333333333333333333333333333333333",
+                "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"),
             OP_POP,
             OP_AND));
     steps.add(
         new Step(
             "or",
-            push("3333333333333333333333333333333333333333333333333333333333333333")
-                + push("cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"),
+            push(
+                "3333333333333333333333333333333333333333333333333333333333333333",
+                "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"),
             OP_POP,
             OP_OR));
     steps.add(
         new Step(
             "xor",
-            push("3333333333333333333333333333333333333333333333333333333333333333")
-                + push("cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"),
+            push(
+                "3333333333333333333333333333333333333333333333333333333333333333",
+                "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"),
             OP_POP,
             OP_XOR));
     steps.add(
         new Step(
-            "xor",
+            "not",
             push("3333333333333333333333333333333333333333333333333333333333333333"),
             OP_POP,
             OP_NOT));
+    steps.add(
+        new Step(
+            "byte",
+            push("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff", "03"),
+            OP_POP,
+            OP_BYTE));
+    steps.add(
+        new Step(
+            "shl",
+            push("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff", "03"),
+            OP_POP,
+            OP_SHL));
+    steps.add(
+        new Step(
+            "shr",
+            push("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff", "03"),
+            OP_POP,
+            OP_SHR));
+    steps.add(
+        new Step(
+            "sar",
+            push("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff", "03"),
+            OP_POP,
+            OP_SAR));
+    // TODO keccak
+    steps.add(new Step("address", "", OP_POP, OP_ADDRESS));
+    steps.add(
+        new Step("balance", push("a94f5374fce5edbc8e2a8697c15331677e6ebf0b"), OP_POP, OP_BALANCE));
+    steps.add(new Step("origin", "", OP_POP, OP_ORIGIN));
+    steps.add(new Step("caller", "", OP_POP, OP_CALLER));
+    steps.add(new Step("callvalue", "", OP_POP, OP_CALLVALUE));
+    steps.add(new Step("calldataload", push("02"), OP_POP, OP_CALLDATALOAD));
+    steps.add(new Step("calldatasize", "", OP_POP, OP_CALLDATASIZE));
+    steps.add(new Step("calldatacopy", push("20", "04", "40"), "", OP_CALLDATACOPY));
+    steps.add(new Step("codesize", "", OP_POP, OP_CODESIZE));
+    steps.add(new Step("codecopy", push("20", "04", "40"), "", OP_CODECOPY));
+    steps.add(new Step("gasprice", "", OP_POP, OP_GASPRICE));
+    steps.add(
+        new Step(
+            "extcodesize",
+            push("e713449c212d891357cc2966816b1d528cfb59e0"),
+            OP_POP,
+            OP_EXTCODESIZE));
+    steps.add(
+        new Step(
+            "extcodecopy",
+            push("20", "04", "40", "e713449c212d891357cc2966816b1d528cfb59e0"),
+            "",
+            OP_EXTCODECOPY));
+    steps.add(
+        new Step(
+            "returndatasize",
+            push("20", "40", "00", "00", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b")
+                + OP_GAS
+                + OP_STATICCALL,
+            "",
+            "",
+            OP_POP,
+            OP_RETURNDATASIZE));
+    steps.add(
+        new Step(
+            "returndatacopy",
+            push("20", "40", "00", "00", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b")
+                + OP_GAS
+                + OP_STATICCALL,
+            "",
+            push("10", "00", "80"),
+            "",
+            OP_RETURNDATACOPY));
+    steps.add(
+        new Step(
+            "extcodehash",
+            push("e713449c212d891357cc2966816b1d528cfb59e0"),
+            OP_POP,
+            OP_EXTCODEHASH));
+    steps.add(new Step("blockhash", push("1000"), OP_POP, OP_BLOCKHASH));
+    steps.add(new Step("coinbase", "", OP_POP, OP_COINBASE));
+    steps.add(new Step("timestamp", "", OP_POP, OP_TIMESTAMP));
+    steps.add(new Step("number", "", OP_POP, OP_NUMBER));
+    steps.add(new Step("difficulty", "", OP_POP, OP_DIFFICULTY));
+    steps.add(new Step("gaslimit", "", OP_POP, OP_GASLIMIT));
+    steps.add(new Step("chainid", "", OP_POP, OP_CHAINID));
+    steps.add(new Step("selfbalance", "", OP_POP, OP_SELFBALANCE));
+    steps.add(new Step("basefee", "", OP_POP, OP_BASEFEE));
+    steps.add(new Step("pop", push("42"), "", OP_POP));
+    steps.add(new Step("mload", push("43", "a0") + OP_MSTORE, "", push("a0"), OP_POP, OP_MLOAD));
+    steps.add(new Step("mstore", push("8765", "c0"), "", OP_MSTORE));
+    steps.add(new Step("mstore8", push("a9", "e0"), "", OP_MSTORE8));
+    steps.add(new Step("sload", push("54"), OP_POP, OP_SLOAD));
+    steps.add(new Step("sstore", push("55", "55"), "", OP_SSTORE));
+    steps.add(new Step("jump", OP_PC + push("05") + OP_ADD, OP_JUMPDEST, OP_JUMP));
+    steps.add(new Step("jumpi", push("01") + OP_PC + push("05") + OP_ADD, OP_JUMPDEST, OP_JUMPI));
+    steps.add(new Step("jumpi2", push("00") + OP_PC + push("05") + OP_ADD, OP_JUMPDEST, OP_JUMPI));
+    steps.add(new Step("pc", "", OP_POP, OP_PC));
+    steps.add(new Step("msize", push("11223344", "0100") + OP_MSTORE, "", "", OP_POP, OP_MSIZE));
+    steps.add(new Step("gas", "", OP_POP, OP_GAS));
+    steps.add(new Step("jumpdest", "", "", OP_JUMPDEST));
+
+    for (int i = 1; i <= 32; i++) {
+      steps.add(new Step("push" + i, "", OP_POP, push(pushData.substring(0, i * 2))));
+    }
+
+    for (int i = 1; i <= 16; i++) {
+      StringBuilder setupPusher = new StringBuilder();
+      StringBuilder cleanupPopper = new StringBuilder();
+
+      for (int j = 1; j <= i; j++) {
+        setupPusher.append(push("1" + Integer.toHexString(j - 1)));
+        cleanupPopper.append(OP_POP);
+        // dup and swap
+      }
+      steps.add(
+          new Step(
+              "dup" + i,
+              setupPusher.toString(),
+              cleanupPopper.toString(),
+              "",
+              OP_POP,
+              Integer.toHexString(NUM_DUP0 + i)));
+      steps.add(
+          new Step(
+              "swap" + i,
+              push("09") + setupPusher,
+              OP_POP + cleanupPopper,
+              "",
+              "",
+              Integer.toHexString(NUM_SWAP0 + i)));
+    }
+
+    steps.add(
+        new Step("log0", push(pushData, "0200") + OP_MSTORE, "", push("20", "0200"), "", OP_LOG0));
+    steps.add(
+        new Step(
+            "log1",
+            push(pushData, "0200") + OP_MSTORE,
+            "",
+            push(pushData, "20", "0200"),
+            "",
+            OP_LOG1));
+    steps.add(
+        new Step(
+            "log2",
+            push(pushData, "0200") + OP_MSTORE,
+            "",
+            push(pushData, pushData, "20", "0200"),
+            "",
+            OP_LOG2));
+    steps.add(
+        new Step(
+            "log3",
+            push(pushData, "0200") + OP_MSTORE,
+            "",
+            push(pushData, pushData, pushData, "20", "0200"),
+            "",
+            OP_LOG3));
+    steps.add(
+        new Step(
+            "log4",
+            push(pushData, "0200") + OP_MSTORE,
+            "",
+            push(pushData, pushData, pushData, pushData, "20", "0200"),
+            "",
+            OP_LOG4));
+
+    steps.add(new Step("create", OP_CODESIZE + push("00", "00"), OP_POP, OP_CREATE));
+    steps.add(
+        new Step(
+            "call",
+            push("20", "40", "20", "20", "00", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b") + OP_GAS,
+            OP_POP,
+            OP_CALL));
+    steps.add(
+        new Step(
+            "callcode",
+            push("20", "40", "20", "20", "00", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b") + OP_GAS,
+            OP_POP,
+            OP_CALLCODE));
+    // skip RETURN
+    steps.add(
+        new Step(
+            "delegatecall",
+            push("20", "40", "00", "20", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b") + OP_GAS,
+            OP_POP,
+            OP_DELEGATECALL));
+    steps.add(new Step("create2", push("00") + OP_CODESIZE + push("00", "00"), OP_POP, OP_CREATE2));
+    steps.add(
+        new Step(
+            "staticcall",
+            push("20", "40", "20", "20", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b") + OP_GAS,
+            OP_POP,
+            OP_STATICCALL));
+    // TODO REVERT
+    // TODO SELFDESTRUCT
+
+    steps.add(new Step("extcodesize_gas", OP_GAS, OP_POP, OP_EXTCODESIZE));
+    steps.add(new Step("extcodehash_gas", OP_GAS, OP_POP, OP_EXTCODEHASH));
+    steps.add(new Step("extcodecopy_gas", push("40", "04", "20") + OP_GAS, "", OP_EXTCODECOPY));
+    steps.add(new Step("balance_gas", OP_GAS, OP_POP, OP_BALANCE));
+    steps.add(new Step("sload_gas", OP_GAS, OP_POP, OP_SLOAD));
+    steps.add(new Step("sstore_gas", OP_GAS + OP_GAS, "", OP_SSTORE));
   }
 }
