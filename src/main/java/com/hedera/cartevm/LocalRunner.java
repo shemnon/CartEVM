@@ -3,20 +3,13 @@ package com.hedera.cartevm;
 import com.google.common.base.Stopwatch;
 import com.hedera.cartevm.besu.SimpleBlockHeader;
 import com.hedera.cartevm.besu.SimpleWorld;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import org.apache.tuweni.bytes.Bytes;
 import org.apache.tuweni.units.bigints.UInt256;
 import org.hyperledger.besu.datatypes.Address;
@@ -32,103 +25,14 @@ import org.hyperledger.besu.evm.OperationTracer;
 import org.hyperledger.besu.evm.PrecompileContractRegistry;
 import org.hyperledger.besu.evm.WorldUpdater;
 
-public class LocalRunner {
+public class LocalRunner extends CodeGenerator {
 
   static final Address SENDER = Address.fromHexString("12345678");
   static final Address RECEIVER = Address.fromHexString("9abcdef0");
   static final Map<String, String> bytecodeCache = new HashMap<>();
-  private static final String template =
-      """
-        {
-          // %1$s
-          %3$s
-          for { let i := 0 } lt(i, %2$s) { i := add(i, 1) } {
-            %4$s
-          }
-          %5$s
-        }
-        """;
-
-  final List<Step> steps;
-  final int unrolledLoopSize;
-  final int outerLoopSize;
-  final long gasLimit;
-  private final String name;
 
   public LocalRunner(List<Step> steps, int unrolledLoopSize, int outerLoopSize, long gasLimit) {
-    this.steps = steps;
-    this.unrolledLoopSize = unrolledLoopSize;
-    this.outerLoopSize = outerLoopSize;
-    this.gasLimit = gasLimit;
-    this.name = steps.stream().map(Step::getName).collect(Collectors.joining("_"));
-  }
-
-  public String generateYul() {
-    StringBuffer inner = new StringBuffer("verbatim_0i_0o(hex\"");
-    List<Step> backwardsSteps = new ArrayList<>(steps);
-    Collections.reverse(backwardsSteps);
-    for (int i = 0; i < unrolledLoopSize; i++) {
-      //      switch (i % 2) {
-      //        case 0 ->
-      steps.forEach(
-          step -> {
-            inner.append(step.localSetupCode);
-            inner.append(step.executionCode);
-            inner.append(step.localCleanupCode);
-          });
-      //        case 1 -> {
-      //          backwardsSteps.forEach(step -> inner.append(step.localSetupCode));
-      //          steps.forEach(
-      //              step -> {
-      //                inner.append(step.executionCode);
-      //                inner.append(step.localCleanupCode);
-      //              });
-      //        }
-      //      }
-    }
-    inner.append("\")");
-
-    String globalSetup =
-        steps.stream()
-            .map(Step::getGlobalSetupCode)
-            .filter(s -> !s.isEmpty())
-            .collect(Collectors.joining());
-    String globalCleanup =
-        steps.stream()
-            .map(Step::getGlobalCleanupCode)
-            .filter(s -> !s.isEmpty())
-            .collect(Collectors.joining());
-    return template.formatted(
-        name,
-        outerLoopSize,
-        globalSetup.isEmpty() ? "" : "verbatim_0i_0o(hex\"" + globalSetup + "\")",
-        inner,
-        globalCleanup.isEmpty() ? "" : "verbatim_0i_0o(hex\"" + globalCleanup + "\")");
-  }
-
-  public String compileYul(String yulSource) {
-    try {
-      ProcessBuilder pb = new ProcessBuilder().command("solc", "--assemble", "-");
-      Process p = pb.start();
-      try {
-        p.getOutputStream().write(yulSource.getBytes(StandardCharsets.UTF_8));
-        p.getOutputStream().close();
-
-        try (var br = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
-          for (String line; (line = br.readLine()) != null; ) {
-            if ("Binary representation:".equals(line)) {
-              return br.readLine();
-            }
-          }
-          // no output found :(
-          return null;
-        }
-      } finally {
-        p.destroy();
-      }
-    } catch (IOException ioe) {
-      return "FE"; // invalid opcode
-    }
+    super(steps, unrolledLoopSize, outerLoopSize, gasLimit);
   }
 
   public void prexistingState(WorldUpdater worldUpdater, Bytes codeBytes) {
@@ -158,7 +62,7 @@ public class LocalRunner {
   }
 
   public void execute(boolean verbose) {
-    String yul = generateYul();
+    String yul = generate(yulTemplate);
     String bytecode = bytecodeCache.computeIfAbsent(yul, this::compileYul);
     Bytes codeBytes = Bytes.fromHexString(bytecode);
 
@@ -213,7 +117,7 @@ public class LocalRunner {
     if (verbose) {
       System.out.printf(
           "%s\t%s\t%,d\t%,.3f\t%,.0f\t%s%n",
-          name,
+          getName(),
           messageFrame
               .getExceptionalHaltReason()
               .map(Enum::toString)

@@ -22,8 +22,6 @@ package com.hedera.cartevm;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import picocli.CommandLine;
@@ -95,6 +93,16 @@ public class CartEVM implements Runnable {
   private final Boolean local = false;
 
   @CommandLine.Option(
+      names = {"--bytecode"},
+      description = "Output the bytecode")
+  private final Boolean bytecode = false;
+
+  @CommandLine.Option(
+      names = {"--initcode"},
+      description = "When generating bytecode, include the initcode")
+  private final Boolean initcode = false;
+
+  @CommandLine.Option(
       names = {"--hedera"},
       description = "Execute hedera test instance")
   private final Boolean hedera = false;
@@ -110,6 +118,7 @@ public class CartEVM implements Runnable {
       throws IOException {
     if (moreSteps < 1) {
       createFiller(chosen, verbose);
+      createBytecode(chosen);
       runLocal(chosen, verbose);
     } else {
       for (Step step : candidates) {
@@ -125,10 +134,15 @@ public class CartEVM implements Runnable {
       return;
     }
     FillerGenerator fillerGenerator = new FillerGenerator(chosen, unrolled, loops, gasLimit);
-    System.out.println(fillerGenerator.getName());
-    Path outputFile = outDir.toPath().resolve(fillerGenerator.getName() + "Filler.yml");
-    System.out.println(outputFile);
-    Files.writeString(outputFile, fillerGenerator.generate());
+    fillerGenerator.createFiller(outDir);
+  }
+
+  private void createBytecode(List<Step> chosen) throws IOException {
+    if (!bytecode) {
+      return;
+    }
+    ByteCodeOutput byteCodeOutput = new ByteCodeOutput(chosen, unrolled, loops, initcode);
+    byteCodeOutput.createBytecode(outDir);
   }
 
   private void runLocal(List<Step> chosen, boolean verbose) {

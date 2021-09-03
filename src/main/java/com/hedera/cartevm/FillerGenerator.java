@@ -20,12 +20,13 @@ package com.hedera.cartevm;
  * ‍
  */
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class FillerGenerator {
+public class FillerGenerator extends CodeGenerator {
 
   private static final String template =
       """
@@ -46,14 +47,11 @@ public class FillerGenerator {
           cccccccccccccccccccccccccccccccccccccccc:
             balance: '0x0ba1a9ce0ba1a9ce'
             code: |
-              :yul  {
-                // %1$s
-                %3$s
-                for { let i := 0 } lt(i, %2$s) { i := add(i, 1) } {
-                  %4$s
-                }
-                %5$s
-              }
+              :yul \s"""
+          + yulTemplate
+          + """
+      \s
+
             nonce: 1
             storage: {}
 
@@ -89,65 +87,19 @@ public class FillerGenerator {
                   0x00: 0
                   """;
 
-  final List<Step> steps;
-  final int unrolledLoopSize;
-  final int outerLoopSize;
-  final long gasLimit;
-  private final String name;
-
   public FillerGenerator(List<Step> steps, int unrolledLoopSize, int outerLoopSize, long gasLimit) {
-    this.steps = steps;
-    this.unrolledLoopSize = unrolledLoopSize;
-    this.outerLoopSize = outerLoopSize;
-    this.gasLimit = gasLimit;
-    this.name = "Cartesian_" + steps.stream().map(Step::getName).collect(Collectors.joining("_"));
+    super(steps, unrolledLoopSize, outerLoopSize, gasLimit);
   }
 
   public String getName() {
-    return name;
+    return "CartEVM_" + super.getName();
   }
 
-  public String generate() {
-    StringBuffer inner = new StringBuffer("verbatim_0i_0o(hex\"");
-
-    List<Step> backwardsSteps = new ArrayList<>(steps);
-    Collections.reverse(backwardsSteps);
-    for (int i = 0; i < unrolledLoopSize; i++) {
-      switch (i % 2) {
-        case 0 -> steps.forEach(
-            step -> {
-              inner.append(step.localSetupCode);
-              inner.append(step.executionCode);
-              inner.append(step.localCleanupCode);
-            });
-        case 1 -> {
-          backwardsSteps.forEach(step -> inner.append(step.localSetupCode));
-          steps.forEach(
-              step -> {
-                inner.append(step.executionCode);
-                inner.append(step.localCleanupCode);
-              });
-        }
-      }
-    }
-    inner.append("\")");
-
-    String globalSetup =
-        steps.stream()
-            .map(Step::getGlobalSetupCode)
-            .filter(s -> !s.isEmpty())
-            .collect(Collectors.joining());
-    String globalCleanup =
-        steps.stream()
-            .map(Step::getGlobalCleanupCode)
-            .filter(s -> !s.isEmpty())
-            .collect(Collectors.joining());
-    return template.formatted(
-        name,
-        outerLoopSize,
-        globalSetup.isEmpty() ? "" : "verbatim_0i_0o(hex\"" + globalSetup + "\")",
-        inner,
-        globalCleanup.isEmpty() ? "" : "verbatim_0i_0o(hex\"" + globalCleanup + "\")",
-        gasLimit);
+  public void createFiller(File outDir) throws IOException {
+    String name = getName();
+    System.out.println(name);
+    Path outputFile = outDir.toPath().resolve(name + "Filler.yml");
+    System.out.println(outputFile);
+    Files.writeString(outputFile, generate(template));
   }
 }
