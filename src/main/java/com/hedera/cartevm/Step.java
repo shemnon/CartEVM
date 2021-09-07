@@ -28,7 +28,7 @@ import java.util.List;
 
 public class Step {
 
-  public static final String OP_STOP = "00";
+  //  public static final String OP_STOP = "00";
   public static final String OP_ADD = "01";
   public static final String OP_MUL = "02";
   public static final String OP_SUB = "03";
@@ -93,69 +93,69 @@ public class Step {
   public static final String OP_GAS = "5A";
   public static final String OP_JUMPDEST = "5B";
   public static final String OP_PUSH1 = "60";
-  public static final String OP_PUSH2 = "61";
-  public static final String OP_PUSH3 = "62";
-  public static final String OP_PUSH4 = "63";
-  public static final String OP_PUSH5 = "64";
-  public static final String OP_PUSH6 = "65";
-  public static final String OP_PUSH7 = "66";
-  public static final String OP_PUSH8 = "67";
-  public static final String OP_PUSH9 = "68";
-  public static final String OP_PUSH10 = "69";
-  public static final String OP_PUSH11 = "6A";
-  public static final String OP_PUSH12 = "6B";
-  public static final String OP_PUSH13 = "6C";
-  public static final String OP_PUSH14 = "6D";
-  public static final String OP_PUSH15 = "6E";
-  public static final String OP_PUSH16 = "6F";
-  public static final String OP_PUSH17 = "70";
-  public static final String OP_PUSH18 = "71";
-  public static final String OP_PUSH19 = "72";
-  public static final String OP_PUSH20 = "73";
-  public static final String OP_PUSH21 = "74";
-  public static final String OP_PUSH22 = "75";
-  public static final String OP_PUSH23 = "76";
-  public static final String OP_PUSH24 = "77";
-  public static final String OP_PUSH25 = "78";
-  public static final String OP_PUSH26 = "79";
-  public static final String OP_PUSH27 = "7A";
-  public static final String OP_PUSH28 = "7B";
-  public static final String OP_PUSH29 = "7C";
-  public static final String OP_PUSH30 = "7D";
-  public static final String OP_PUSH31 = "7E";
-  public static final String OP_PUSH32 = "7F";
+  //  public static final String OP_PUSH2 = "61";
+  //  public static final String OP_PUSH3 = "62";
+  //  public static final String OP_PUSH4 = "63";
+  //  public static final String OP_PUSH5 = "64";
+  //  public static final String OP_PUSH6 = "65";
+  //  public static final String OP_PUSH7 = "66";
+  //  public static final String OP_PUSH8 = "67";
+  //  public static final String OP_PUSH9 = "68";
+  //  public static final String OP_PUSH10 = "69";
+  //  public static final String OP_PUSH11 = "6A";
+  //  public static final String OP_PUSH12 = "6B";
+  //  public static final String OP_PUSH13 = "6C";
+  //  public static final String OP_PUSH14 = "6D";
+  //  public static final String OP_PUSH15 = "6E";
+  //  public static final String OP_PUSH16 = "6F";
+  //  public static final String OP_PUSH17 = "70";
+  //  public static final String OP_PUSH18 = "71";
+  //  public static final String OP_PUSH19 = "72";
+  //  public static final String OP_PUSH20 = "73";
+  //  public static final String OP_PUSH21 = "74";
+  //  public static final String OP_PUSH22 = "75";
+  //  public static final String OP_PUSH23 = "76";
+  //  public static final String OP_PUSH24 = "77";
+  //  public static final String OP_PUSH25 = "78";
+  //  public static final String OP_PUSH26 = "79";
+  //  public static final String OP_PUSH27 = "7A";
+  //  public static final String OP_PUSH28 = "7B";
+  //  public static final String OP_PUSH29 = "7C";
+  //  public static final String OP_PUSH30 = "7D";
+  //  public static final String OP_PUSH31 = "7E";
+  //  public static final String OP_PUSH32 = "7F";
   public static final String OP_DUP1 = "80";
-  public static final String OP_DUP2 = "81";
-  public static final String OP_DUP3 = "82";
-  public static final String OP_DUP4 = "83";
-  public static final String OP_DUP5 = "84";
-  public static final String OP_DUP6 = "85";
-  public static final String OP_DUP7 = "86";
-  public static final String OP_DUP8 = "87";
-  public static final String OP_DUP9 = "88";
-  public static final String OP_DUP10 = "89";
-  public static final String OP_DUP11 = "8A";
-  public static final String OP_DUP12 = "8B";
-  public static final String OP_DUP13 = "8C";
-  public static final String OP_DUP14 = "8D";
-  public static final String OP_DUP15 = "8E";
-  public static final String OP_DUP16 = "8F";
+  //  public static final String OP_DUP2 = "81";
+  //  public static final String OP_DUP3 = "82";
+  //  public static final String OP_DUP4 = "83";
+  //  public static final String OP_DUP5 = "84";
+  //  public static final String OP_DUP6 = "85";
+  //  public static final String OP_DUP7 = "86";
+  //  public static final String OP_DUP8 = "87";
+  //  public static final String OP_DUP9 = "88";
+  //  public static final String OP_DUP10 = "89";
+  //  public static final String OP_DUP11 = "8A";
+  //  public static final String OP_DUP12 = "8B";
+  //  public static final String OP_DUP13 = "8C";
+  //  public static final String OP_DUP14 = "8D";
+  //  public static final String OP_DUP15 = "8E";
+  //  public static final String OP_DUP16 = "8F";
   public static final String OP_SWAP1 = "90";
-  public static final String OP_SWAP2 = "91";
-  public static final String OP_SWAP3 = "92";
-  public static final String OP_SWAP4 = "93";
-  public static final String OP_SWAP5 = "94";
-  public static final String OP_SWAP6 = "95";
-  public static final String OP_SWAP7 = "96";
-  public static final String OP_SWAP8 = "97";
-  public static final String OP_SWAP9 = "98";
-  public static final String OP_SWAP10 = "99";
-  public static final String OP_SWAP11 = "9A";
-  public static final String OP_SWAP12 = "9B";
-  public static final String OP_SWAP13 = "9C";
-  public static final String OP_SWAP14 = "9D";
-  public static final String OP_SWAP15 = "9E";
-  public static final String OP_SWAP16 = "9F";
+  //  public static final String OP_SWAP2 = "91";
+  //  public static final String OP_SWAP3 = "92";
+  //  public static final String OP_SWAP4 = "93";
+  //  public static final String OP_SWAP5 = "94";
+  //  public static final String OP_SWAP6 = "95";
+  //  public static final String OP_SWAP7 = "96";
+  //  public static final String OP_SWAP8 = "97";
+  //  public static final String OP_SWAP9 = "98";
+  //  public static final String OP_SWAP10 = "99";
+  //  public static final String OP_SWAP11 = "9A";
+  //  public static final String OP_SWAP12 = "9B";
+  //  public static final String OP_SWAP13 = "9C";
+  //  public static final String OP_SWAP14 = "9D";
+  //  public static final String OP_SWAP15 = "9E";
+  //  public static final String OP_SWAP16 = "9F";
   public static final String OP_LOG0 = "A0";
   public static final String OP_LOG1 = "A1";
   public static final String OP_LOG2 = "A2";
@@ -179,24 +179,27 @@ public class Step {
 
   static {
     String pushData = "0102030405060708091011121314151617181920212223242526272829303132";
-    steps.add(new Step("add_small", push("02", "02"), OP_POP, OP_ADD));
-    steps.add(new Step("mul_small", push("02", "02"), OP_POP, OP_MUL));
-    steps.add(new Step("sub_small", push("02", "02"), OP_POP, OP_SUB));
-    steps.add(new Step("div_small", push("02", "02"), OP_POP, OP_DIV));
-    steps.add(new Step("sdiv_small", push("02", "02"), OP_POP, OP_SDIV));
-    steps.add(new Step("mod_small", push("02", "02"), OP_POP, OP_MOD));
-    steps.add(new Step("smod_small", push("02", "02"), OP_POP, OP_SMOD));
-    steps.add(new Step("addmod_small", push("02", "02", "02"), OP_POP, OP_ADDMOD));
-    steps.add(new Step("mulmod_small", push("02", "02", "02"), OP_POP, OP_MULMOD));
-    steps.add(new Step("exp_small", push("02", "02"), OP_POP, OP_EXP));
-    steps.add(new Step("signextend_small", push("f8", "00"), OP_POP, OP_SIGNEXTEND));
-    steps.add(new Step("lt", push("02", "01"), OP_POP, OP_LT));
-    steps.add(new Step("gt", push("02", "01"), OP_POP, OP_GT));
-    steps.add(new Step("slt", push("02", "01"), OP_POP, OP_SLT));
-    steps.add(new Step("sgt", push("02", "01"), OP_POP, OP_SGT));
-    steps.add(new Step("eq", push("02", "01"), OP_POP, OP_EQ));
-    steps.add(new Step("isZero_zero", push("00"), OP_POP, OP_ISZERO));
-    steps.add(new Step("isZero_small", push("01"), OP_POP, OP_ISZERO));
+
+    steps.add(new Step("nothing", "", "", "", 0));
+
+    steps.add(new Step("add_small", push("02", "02"), OP_POP, OP_ADD, 11));
+    steps.add(new Step("mul_small", push("02", "02"), OP_POP, OP_MUL, 13));
+    steps.add(new Step("sub_small", push("02", "02"), OP_POP, OP_SUB, 11));
+    steps.add(new Step("div_small", push("02", "02"), OP_POP, OP_DIV, 13));
+    steps.add(new Step("sdiv_small", push("02", "02"), OP_POP, OP_SDIV, 13));
+    steps.add(new Step("mod_small", push("02", "02"), OP_POP, OP_MOD, 13));
+    steps.add(new Step("smod_small", push("02", "02"), OP_POP, OP_SMOD, 13));
+    steps.add(new Step("addmod_small", push("02", "02", "02"), OP_POP, OP_ADDMOD, 19));
+    steps.add(new Step("mulmod_small", push("02", "02", "02"), OP_POP, OP_MULMOD, 19));
+    steps.add(new Step("exp_small", push("02", "02"), OP_POP, OP_EXP, 68));
+    steps.add(new Step("signextend_small", push("f8", "00"), OP_POP, OP_SIGNEXTEND, 13));
+    steps.add(new Step("lt", push("02", "01"), OP_POP, OP_LT, 11));
+    steps.add(new Step("gt", push("02", "01"), OP_POP, OP_GT, 11));
+    steps.add(new Step("slt", push("02", "01"), OP_POP, OP_SLT, 11));
+    steps.add(new Step("sgt", push("02", "01"), OP_POP, OP_SGT, 11));
+    steps.add(new Step("eq", push("02", "01"), OP_POP, OP_EQ, 11));
+    steps.add(new Step("isZero_zero", push("00"), OP_POP, OP_ISZERO, 8));
+    steps.add(new Step("isZero_small", push("01"), OP_POP, OP_ISZERO, 8));
     steps.add(
         new Step(
             "and",
@@ -204,7 +207,8 @@ public class Step {
                 "3333333333333333333333333333333333333333333333333333333333333333",
                 "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"),
             OP_POP,
-            OP_AND));
+            OP_AND,
+            11));
     steps.add(
         new Step(
             "or",
@@ -212,7 +216,8 @@ public class Step {
                 "3333333333333333333333333333333333333333333333333333333333333333",
                 "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"),
             OP_POP,
-            OP_OR));
+            OP_OR,
+            11));
     steps.add(
         new Step(
             "xor",
@@ -220,62 +225,71 @@ public class Step {
                 "3333333333333333333333333333333333333333333333333333333333333333",
                 "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"),
             OP_POP,
-            OP_XOR));
+            OP_XOR,
+            11));
     steps.add(
         new Step(
             "not",
             push("3333333333333333333333333333333333333333333333333333333333333333"),
             OP_POP,
-            OP_NOT));
+            OP_NOT,
+            8));
     steps.add(
         new Step(
             "byte",
             push("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff", "03"),
             OP_POP,
-            OP_BYTE));
+            OP_BYTE,
+            11));
     steps.add(
         new Step(
             "shl",
             push("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff", "03"),
             OP_POP,
-            OP_SHL));
+            OP_SHL,
+            11));
     steps.add(
         new Step(
             "shr",
             push("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff", "03"),
             OP_POP,
-            OP_SHR));
+            OP_SHR,
+            11));
     steps.add(
         new Step(
             "sar",
             push("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff", "03"),
             OP_POP,
-            OP_SAR));
+            OP_SAR,
+            11));
     // TODO keccak
-    steps.add(new Step("address", "", OP_POP, OP_ADDRESS));
+    steps.add(new Step("address", "", OP_POP, OP_ADDRESS, 4));
     steps.add(
-        new Step("balance", push("a94f5374fce5edbc8e2a8697c15331677e6ebf0b"), OP_POP, OP_BALANCE));
-    steps.add(new Step("origin", "", OP_POP, OP_ORIGIN));
-    steps.add(new Step("caller", "", OP_POP, OP_CALLER));
-    steps.add(new Step("callvalue", "", OP_POP, OP_CALLVALUE));
-    steps.add(new Step("calldataload", push("02"), OP_POP, OP_CALLDATALOAD));
-    steps.add(new Step("calldatasize", "", OP_POP, OP_CALLDATASIZE));
-    steps.add(new Step("calldatacopy", push("20", "04", "40"), "", OP_CALLDATACOPY));
-    steps.add(new Step("codesize", "", OP_POP, OP_CODESIZE));
-    steps.add(new Step("codecopy", push("20", "04", "40"), "", OP_CODECOPY));
-    steps.add(new Step("gasprice", "", OP_POP, OP_GASPRICE));
+        new Step(
+            "balance", push("a94f5374fce5edbc8e2a8697c15331677e6ebf0b"), OP_POP, OP_BALANCE, 400));
+    steps.add(new Step("origin", "", OP_POP, OP_ORIGIN, 4));
+    steps.add(new Step("caller", "", OP_POP, OP_CALLER, 4));
+    steps.add(new Step("callvalue", "", OP_POP, OP_CALLVALUE, 4));
+    steps.add(new Step("calldataload", push("02"), OP_POP, OP_CALLDATALOAD, 8));
+    steps.add(new Step("calldatasize", "", OP_POP, OP_CALLDATASIZE, 4));
+    steps.add(new Step("calldatacopy", push("20", "04", "40"), "", OP_CALLDATACOPY, 24));
+    steps.add(new Step("codesize", "", OP_POP, OP_CODESIZE, 4));
+    steps.add(new Step("codecopy", push("20", "04", "40"), "", OP_CODECOPY, 24));
+    steps.add(new Step("gasprice", "", OP_POP, OP_GASPRICE, 4));
     steps.add(
         new Step(
             "extcodesize",
             push("e713449c212d891357cc2966816b1d528cfb59e0"),
             OP_POP,
-            OP_EXTCODESIZE));
+            OP_EXTCODESIZE,
+            705));
     steps.add(
         new Step(
             "extcodecopy",
             push("20", "04", "40", "e713449c212d891357cc2966816b1d528cfb59e0"),
             "",
-            OP_EXTCODECOPY));
+            OP_EXTCODECOPY,
+            712));
     steps.add(
         new Step(
             "returndatasize",
@@ -285,7 +299,9 @@ public class Step {
             "",
             "",
             OP_POP,
-            OP_RETURNDATASIZE));
+            OP_RETURNDATASIZE,
+            4,
+            743));
     steps.add(
         new Step(
             "returndatacopy",
@@ -295,38 +311,45 @@ public class Step {
             "",
             push("10", "00", "80"),
             "",
-            OP_RETURNDATACOPY));
+            OP_RETURNDATACOPY,
+            15,
+            743));
     steps.add(
         new Step(
             "extcodehash",
             push("e713449c212d891357cc2966816b1d528cfb59e0"),
             OP_POP,
-            OP_EXTCODEHASH));
-    steps.add(new Step("blockhash", push("1000"), OP_POP, OP_BLOCKHASH));
-    steps.add(new Step("coinbase", "", OP_POP, OP_COINBASE));
-    steps.add(new Step("timestamp", "", OP_POP, OP_TIMESTAMP));
-    steps.add(new Step("number", "", OP_POP, OP_NUMBER));
-    steps.add(new Step("difficulty", "", OP_POP, OP_DIFFICULTY));
-    steps.add(new Step("gaslimit", "", OP_POP, OP_GASLIMIT));
-    steps.add(new Step("chainid", "", OP_POP, OP_CHAINID));
-    steps.add(new Step("selfbalance", "", OP_POP, OP_SELFBALANCE));
-    steps.add(new Step("basefee", "", OP_POP, OP_BASEFEE));
-    steps.add(new Step("pop", push("42"), "", OP_POP));
-    steps.add(new Step("mload", push("43", "a0") + OP_MSTORE, "", push("a0"), OP_POP, OP_MLOAD));
-    steps.add(new Step("mstore", push("8765", "c0"), "", OP_MSTORE));
-    steps.add(new Step("mstore8", push("a9", "e0"), "", OP_MSTORE8));
-    steps.add(new Step("sload", push("54"), OP_POP, OP_SLOAD));
-    steps.add(new Step("sstore", push("55", "55"), "", OP_SSTORE));
-    steps.add(new Step("jump", OP_PC + push("05") + OP_ADD, OP_JUMPDEST, OP_JUMP));
-    steps.add(new Step("jumpi", push("01") + OP_PC + push("05") + OP_ADD, OP_JUMPDEST, OP_JUMPI));
-    steps.add(new Step("jumpi2", push("00") + OP_PC + push("05") + OP_ADD, OP_JUMPDEST, OP_JUMPI));
-    steps.add(new Step("pc", "", OP_POP, OP_PC));
-    steps.add(new Step("msize", push("11223344", "0100") + OP_MSTORE, "", "", OP_POP, OP_MSIZE));
-    steps.add(new Step("gas", "", OP_POP, OP_GAS));
-    steps.add(new Step("jumpdest", "", "", OP_JUMPDEST));
+            OP_EXTCODEHASH,
+            403));
+    steps.add(new Step("blockhash", push("1000"), OP_POP, OP_BLOCKHASH, 25));
+    steps.add(new Step("coinbase", "", OP_POP, OP_COINBASE, 4));
+    steps.add(new Step("timestamp", "", OP_POP, OP_TIMESTAMP, 4));
+    steps.add(new Step("number", "", OP_POP, OP_NUMBER, 4));
+    steps.add(new Step("difficulty", "", OP_POP, OP_DIFFICULTY, 4));
+    steps.add(new Step("gaslimit", "", OP_POP, OP_GASLIMIT, 4));
+    steps.add(new Step("chainid", "", OP_POP, OP_CHAINID, 4));
+    steps.add(new Step("selfbalance", "", OP_POP, OP_SELFBALANCE, 7));
+    steps.add(new Step("basefee", "", OP_POP, OP_BASEFEE, 4));
+    steps.add(new Step("pop", push("42"), "", OP_POP, 5));
+    steps.add(
+        new Step("mload", push("43", "a0") + OP_MSTORE, "", push("a0"), OP_POP, OP_MLOAD, 8, 9));
+    steps.add(new Step("mstore", push("8765", "c0"), "", OP_MSTORE, 9));
+    steps.add(new Step("mstore8", push("a9", "e0"), "", OP_MSTORE8, 9));
+    steps.add(new Step("sload", push("54"), OP_POP, OP_SLOAD, 205));
+    steps.add(new Step("sstore", push("55", "55"), "", OP_SSTORE, 5006, 15000));
+    steps.add(new Step("jump", OP_PC + push("05") + OP_ADD, OP_JUMPDEST, OP_JUMP, 17));
+    steps.add(
+        new Step("jumpi", push("01") + OP_PC + push("05") + OP_ADD, OP_JUMPDEST, OP_JUMPI, 22));
+    steps.add(
+        new Step("jumpi2", push("00") + OP_PC + push("05") + OP_ADD, OP_JUMPDEST, OP_JUMPI, 22));
+    steps.add(new Step("pc", "", OP_POP, OP_PC, 4));
+    steps.add(
+        new Step("msize", push("11223344", "0100") + OP_MSTORE, "", "", OP_POP, OP_MSIZE, 5, 9));
+    steps.add(new Step("gas", "", OP_POP, OP_GAS, 4));
+    steps.add(new Step("jumpdest", "", "", OP_JUMPDEST, 1));
 
     for (int i = 1; i <= 32; i++) {
-      steps.add(new Step("push" + i, "", OP_POP, push(pushData.substring(0, i * 2))));
+      steps.add(new Step("push" + i, "", OP_POP, push(pushData.substring(0, i * 2)), 5));
     }
 
     for (int i = 1; i <= 16; i++) {
@@ -345,19 +368,24 @@ public class Step {
               cleanupPopper.toString(),
               "",
               OP_POP,
-              Integer.toHexString(NUM_DUP0 + i)));
+              Integer.toHexString(NUM_DUP0 + i),
+              5,
+              6 * i));
       steps.add(
           new Step(
               "swap" + i,
               push("09") + setupPusher,
               OP_POP + cleanupPopper,
               "",
-              "",
-              Integer.toHexString(NUM_SWAP0 + i)));
+              Integer.toHexString(NUM_SWAP0 + i),
+              Integer.toHexString(NUM_SWAP0 + i),
+              6,
+              6 * i));
     }
 
     steps.add(
-        new Step("log0", push(pushData, "0200") + OP_MSTORE, "", push("20", "0200"), "", OP_LOG0));
+        new Step(
+            "log0", push(pushData, "0200") + OP_MSTORE, "", push("20", "0200"), "", OP_LOG0, 697));
     steps.add(
         new Step(
             "log1",
@@ -365,7 +393,8 @@ public class Step {
             "",
             push(pushData, "20", "0200"),
             "",
-            OP_LOG1));
+            OP_LOG1,
+            1075));
     steps.add(
         new Step(
             "log2",
@@ -373,7 +402,8 @@ public class Step {
             "",
             push(pushData, pushData, "20", "0200"),
             "",
-            OP_LOG2));
+            OP_LOG2,
+            1453));
     steps.add(
         new Step(
             "log3",
@@ -381,7 +411,8 @@ public class Step {
             "",
             push(pushData, pushData, pushData, "20", "0200"),
             "",
-            OP_LOG3));
+            OP_LOG3,
+            1831));
     steps.add(
         new Step(
             "log4",
@@ -389,44 +420,52 @@ public class Step {
             "",
             push(pushData, pushData, pushData, pushData, "20", "0200"),
             "",
-            OP_LOG4));
+            OP_LOG4,
+            2209));
 
-    steps.add(new Step("create", OP_CODESIZE + push("00", "00"), OP_POP, OP_CREATE));
+    steps.add(new Step("create", OP_CODESIZE + push("00", "00"), OP_POP, OP_CREATE, 32013));
     steps.add(
         new Step(
             "call",
             push("20", "40", "20", "20", "00", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b") + OP_GAS,
             OP_POP,
-            OP_CALL));
+            OP_CALL,
+            745));
     steps.add(
         new Step(
             "callcode",
             push("20", "40", "20", "20", "00", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b") + OP_GAS,
             OP_POP,
-            OP_CALLCODE));
-    // skip RETURN
+            OP_CALLCODE,
+            745));
+    //     skip RETURN
     steps.add(
         new Step(
             "delegatecall",
             push("20", "40", "00", "20", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b") + OP_GAS,
             OP_POP,
-            OP_DELEGATECALL));
-    steps.add(new Step("create2", push("00") + OP_CODESIZE + push("00", "00"), OP_POP, OP_CREATE2));
+            OP_DELEGATECALL,
+            745));
+    steps.add(
+        new Step(
+            "create2", push("00") + OP_CODESIZE + push("00", "00"), OP_POP, OP_CREATE2, 32022));
     steps.add(
         new Step(
             "staticcall",
             push("20", "40", "20", "20", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b") + OP_GAS,
             OP_POP,
-            OP_STATICCALL));
+            OP_STATICCALL,
+            745));
     // TODO REVERT
     // TODO SELFDESTRUCT
 
-    steps.add(new Step("extcodesize_gas", OP_GAS, OP_POP, OP_EXTCODESIZE));
-    steps.add(new Step("extcodehash_gas", OP_GAS, OP_POP, OP_EXTCODEHASH));
-    steps.add(new Step("extcodecopy_gas", push("40", "04", "20") + OP_GAS, "", OP_EXTCODECOPY));
-    steps.add(new Step("balance_gas", OP_GAS, OP_POP, OP_BALANCE));
-    steps.add(new Step("sload_gas", OP_GAS, OP_POP, OP_SLOAD));
-    steps.add(new Step("sstore_gas", OP_GAS + OP_GAS, "", OP_SSTORE));
+    steps.add(new Step("extcodesize_gas", OP_GAS, OP_POP, OP_EXTCODESIZE, 705));
+    steps.add(new Step("extcodehash_gas", OP_GAS, OP_POP, OP_EXTCODEHASH, 405));
+    steps.add(
+        new Step("extcodecopy_gas", push("40", "04", "20") + OP_GAS, "", OP_EXTCODECOPY, 705));
+    steps.add(new Step("balance_gas", OP_GAS, OP_POP, OP_BALANCE, 405));
+    steps.add(new Step("sload_gas", OP_GAS, OP_POP, OP_SLOAD, 205));
+    steps.add(new Step("sstore_gas", OP_GAS + OP_GAS, "", OP_SSTORE, 22104));
   }
 
   final String name;
@@ -435,9 +474,26 @@ public class Step {
   final String localSetupCode;
   final String localCleanupCode;
   final String executionCode;
+  final int gasCost;
+  final int gasCostFirst;
 
-  public Step(String name, String localSetupCode, String localCleanupCode, String executionCode) {
-    this(name, "", "", localSetupCode, localCleanupCode, executionCode);
+  public Step(
+      String name,
+      String localSetupCode,
+      String localCleanupCode,
+      String executionCode,
+      int gasCost) {
+    this(name, "", "", localSetupCode, localCleanupCode, executionCode, gasCost, 0);
+  }
+
+  public Step(
+      String name,
+      String localSetupCode,
+      String localCleanupCode,
+      String executionCode,
+      int gasCost,
+      int gasCostFirst) {
+    this(name, "", "", localSetupCode, localCleanupCode, executionCode, gasCost, gasCostFirst);
   }
 
   public Step(
@@ -446,13 +502,36 @@ public class Step {
       String globalCleanupCode,
       String localSetupCode,
       String localCleanupCode,
-      String executionCode) {
+      String executionCode,
+      int gasCost) {
+    this(
+        name,
+        globalSetupCode,
+        globalCleanupCode,
+        localSetupCode,
+        localCleanupCode,
+        executionCode,
+        gasCost,
+        0);
+  }
+
+  public Step(
+      String name,
+      String globalSetupCode,
+      String globalCleanupCode,
+      String localSetupCode,
+      String localCleanupCode,
+      String executionCode,
+      int gasCost,
+      int gasCostFirst) {
     this.name = name;
     this.globalSetupCode = globalSetupCode;
     this.globalCleanupCode = globalCleanupCode;
     this.localSetupCode = localSetupCode;
     this.localCleanupCode = localCleanupCode;
     this.executionCode = executionCode;
+    this.gasCost = gasCost;
+    this.gasCostFirst = gasCostFirst;
   }
 
   static String push(String... values) {

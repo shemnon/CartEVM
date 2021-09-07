@@ -41,18 +41,6 @@ import picocli.CommandLine;
 public class CartEVM implements Runnable {
 
   @CommandLine.Option(
-      names = {"--unrolled"},
-      paramLabel = "int",
-      description = "Number of unrolled iterations")
-  private final Integer unrolled = 1;
-
-  @CommandLine.Option(
-      names = {"--loop"},
-      paramLabel = "int",
-      description = "Number of loop iterations")
-  private final Integer loops = 10;
-
-  @CommandLine.Option(
       names = {"--repeat"},
       paramLabel = "int",
       description = "Number of times to repeat the whole benchmark")
@@ -69,6 +57,12 @@ public class CartEVM implements Runnable {
       paramLabel = "long",
       description = "Number of loop iterations")
   private final Long gasLimit = 10_000_000L;
+
+  @CommandLine.Option(
+      names = {"--size-limit"},
+      paramLabel = "long",
+      description = "max number of bytes for the _internal_ contract loop")
+  private final Integer sizeLimit = 5120;
 
   @CommandLine.Option(
       names = {"--steps"},
@@ -133,7 +127,7 @@ public class CartEVM implements Runnable {
     if (!filler) {
       return;
     }
-    FillerGenerator fillerGenerator = new FillerGenerator(chosen, unrolled, loops, gasLimit);
+    FillerGenerator fillerGenerator = new FillerGenerator(chosen, gasLimit, sizeLimit);
     fillerGenerator.createFiller(outDir);
   }
 
@@ -141,7 +135,7 @@ public class CartEVM implements Runnable {
     if (!bytecode) {
       return;
     }
-    ByteCodeOutput byteCodeOutput = new ByteCodeOutput(chosen, unrolled, loops, initcode);
+    ByteCodeOutput byteCodeOutput = new ByteCodeOutput(chosen, initcode, gasLimit, sizeLimit);
     byteCodeOutput.createBytecode(outDir);
   }
 
@@ -149,7 +143,7 @@ public class CartEVM implements Runnable {
     if (!local) {
       return;
     }
-    new LocalRunner(chosen, unrolled, loops, gasLimit).execute(verbose);
+    new LocalRunner(chosen, gasLimit, sizeLimit).execute(verbose);
   }
 
   @Override

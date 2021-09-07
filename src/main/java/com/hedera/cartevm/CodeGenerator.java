@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 
 public class CodeGenerator {
 
+  public static long HARNESS_OVERHEAD_ONE_TIME = 32;
+  public static long HARNESS_OVERHEAD_EACH_LOOP = 51;
+
   static final String yulTemplate =
       """
 			{
@@ -24,19 +27,13 @@ public class CodeGenerator {
 			""";
 
   final List<Step> steps;
-  final int unrolledLoopSize;
-  final int outerLoopSize;
   final long gasLimit;
+  final int sizeLimit;
 
-  public CodeGenerator(
-      final List<Step> steps,
-      final int unrolledLoopSize,
-      final int outerLoopSize,
-      final long gasLimit) {
+  public CodeGenerator(final List<Step> steps, final long gasLimit, final int sizeLimit) {
     this.steps = steps;
-    this.unrolledLoopSize = unrolledLoopSize;
-    this.outerLoopSize = outerLoopSize;
     this.gasLimit = gasLimit;
+    this.sizeLimit = sizeLimit;
   }
 
   String getName() {
@@ -44,29 +41,65 @@ public class CodeGenerator {
   }
 
   public String generate(String template) {
-    StringBuffer inner = new StringBuffer("verbatim_0i_0o(hex\"");
+    StringBuffer inner = new StringBuffer();
 
     List<Step> backwardsSteps = new ArrayList<>(steps);
     Collections.reverse(backwardsSteps);
-    for (int i = 0; i < unrolledLoopSize; i++) {
-      switch (i % 2) {
-        case 0 -> steps.forEach(
-            step -> {
-              inner.append(step.localSetupCode);
-              inner.append(step.executionCode);
-              inner.append(step.localCleanupCode);
-            });
-        case 1 -> {
-          backwardsSteps.forEach(step -> inner.append(step.localSetupCode));
-          steps.forEach(
-              step -> {
-                inner.append(step.executionCode);
-                inner.append(step.localCleanupCode);
-              });
-        }
-      }
+    int overheadSize =
+        200
+            + steps.stream()
+                .mapToInt(s -> s.globalSetupCode.length() + s.globalCleanupCode.length())
+                .sum();
+    int iterationSize =
+        steps.stream()
+                .mapToInt(
+                    s ->
+                        s.localSetupCode.length()
+                            + s.executionCode.length()
+                            + s.globalCleanupCode.length())
+                .sum()
+            * 2;
+    int iterationCount = iterationSize == 0 ? 1 : (sizeLimit - overheadSize) / iterationSize;
+
+    long setupGas = HARNESS_OVERHEAD_ONE_TIME + steps.stream().mapToLong(s -> s.gasCostFirst).sum();
+    long gasForLoops = gasLimit - setupGas;
+    long gasPerIteration = (steps.stream().mapToLong(s -> s.gasCost).sum());
+
+    long iterationGas = HARNESS_OVERHEAD_EACH_LOOP + gasPerIteration * iterationCount;
+    while (iterationGas > gasForLoops && iterationCount > 1) {
+      iterationCount /= 2;
+      iterationGas = gasPerIteration * iterationCount;
     }
-    inner.append("\")");
+    long totalLoops = gasForLoops / iterationGas;
+    System.out.printf(
+        "unroll: %d\ttotal loops: %d\tgasLoop: %d\tleftoverGas: %d\tgas/iter: %d\tgas for loop: %d\t",
+        iterationCount,
+        totalLoops,
+        iterationGas,
+        gasLimit - setupGas - iterationGas,
+        gasPerIteration,
+        gasForLoops);
+
+    for (int i = 0; i < iterationCount; i++) {
+      // weaving setup doesn't work well with dup and swap
+      // switch (i % 2) {
+      //   case 0 ->
+      steps.forEach(
+          step -> {
+            inner.append(step.localSetupCode);
+            inner.append(step.executionCode);
+            inner.append(step.localCleanupCode);
+          });
+      //   case 1 -> {
+      //     backwardsSteps.forEach(step -> inner.append(step.localSetupCode));
+      //     steps.forEach(
+      //         step -> {
+      //           inner.append(step.executionCode);
+      //           inner.append(step.localCleanupCode);
+      //         });
+      //     }
+      // }
+    }
 
     String globalSetup =
         steps.stream()
@@ -80,9 +113,9 @@ public class CodeGenerator {
             .collect(Collectors.joining());
     return template.formatted(
         getName(),
-        outerLoopSize,
+        totalLoops,
         globalSetup.isEmpty() ? "" : "verbatim_0i_0o(hex\"" + globalSetup + "\")",
-        inner,
+        inner.isEmpty() ? "" : "verbatim_0i_0o(hex\"" + inner + "\")",
         globalCleanup.isEmpty() ? "" : "verbatim_0i_0o(hex\"" + globalCleanup + "\")",
         gasLimit);
   }
@@ -101,9 +134,15 @@ public class CodeGenerator {
               return br.readLine();
             }
           }
-          // no output found :(
-          return null;
         }
+        // no output found :(
+        // display error output
+        try (var br = new BufferedReader(new InputStreamReader(p.getErrorStream()))) {
+          for (String line; (line = br.readLine()) != null; ) {
+            System.out.println(line);
+          }
+        }
+        return null;
       } finally {
         p.destroy();
       }

@@ -31,8 +31,8 @@ public class LocalRunner extends CodeGenerator {
   static final Address RECEIVER = Address.fromHexString("9abcdef0");
   static final Map<String, String> bytecodeCache = new HashMap<>();
 
-  public LocalRunner(List<Step> steps, int unrolledLoopSize, int outerLoopSize, long gasLimit) {
-    super(steps, unrolledLoopSize, outerLoopSize, gasLimit);
+  public LocalRunner(List<Step> steps, long gasLimit, int sizeLimit) {
+    super(steps, gasLimit, sizeLimit);
   }
 
   public void prexistingState(WorldUpdater worldUpdater, Bytes codeBytes) {
@@ -69,14 +69,14 @@ public class LocalRunner extends CodeGenerator {
     WorldUpdater worldUpdater = new SimpleWorld();
     prexistingState(worldUpdater, codeBytes);
 
-    //    final EVM evm = MainnetEvms.berlin();
-    final EVM evm = MainnetEvms.london();
+    // final EVM evm = MainnetEvms.london();
+    final EVM evm = MainnetEvms.petersburg();
     final PrecompileContractRegistry precompileContractRegistry = new PrecompileContractRegistry();
     MainnetPrecompiledContracts.populateForIstanbul(
         precompileContractRegistry, evm.getGasCalculator());
     final Stopwatch stopwatch = Stopwatch.createUnstarted();
     final Deque<MessageFrame> messageFrameStack = new ArrayDeque<>();
-    final Gas initialGas = Gas.of(gasLimit);
+    final Gas initialGas = Gas.of(gasLimit * 2);
     MessageFrame messageFrame =
         MessageFrame.builder()
             .type(MessageFrame.Type.MESSAGE_CALL)

@@ -14,11 +14,8 @@ public class ByteCodeOutput extends CodeGenerator {
   final boolean initCode;
 
   public ByteCodeOutput(
-      final List<Step> steps,
-      final int unrolledLoopSize,
-      final int outerLoopSize,
-      final boolean initCode) {
-    super(steps, unrolledLoopSize, outerLoopSize, 16_000_000L);
+      final List<Step> steps, final boolean initCode, final long gasLimit, final int sizeLimit) {
+    super(steps, gasLimit, sizeLimit);
     this.initCode = initCode;
   }
 

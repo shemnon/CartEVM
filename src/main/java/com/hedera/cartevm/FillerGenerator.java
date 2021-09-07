@@ -87,8 +87,8 @@ public class FillerGenerator extends CodeGenerator {
                   0x00: 0
                   """;
 
-  public FillerGenerator(List<Step> steps, int unrolledLoopSize, int outerLoopSize, long gasLimit) {
-    super(steps, unrolledLoopSize, outerLoopSize, gasLimit);
+  public FillerGenerator(List<Step> steps, long gasLimit, int sizeLimit) {
+    super(steps, gasLimit, sizeLimit);
   }
 
   public String getName() {
