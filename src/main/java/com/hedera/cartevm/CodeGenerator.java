@@ -1,5 +1,25 @@
 package com.hedera.cartevm;
 
+/*-
+ * ‌
+ * CartEVM
+ * ​
+ * Copyright (C) 2021 Hedera Hashgraph, LLC
+ * ​
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ‍
+ */
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -48,37 +68,29 @@ public class CodeGenerator {
     int overheadSize =
         200
             + steps.stream()
-                .mapToInt(s -> s.globalSetupCode.length() + s.globalCleanupCode.length())
+                .mapToInt(s -> s.getGlobalSetupCode().length() + s.getGlobalCleanupCode().length())
                 .sum();
     int iterationSize =
         steps.stream()
                 .mapToInt(
                     s ->
-                        s.localSetupCode.length()
-                            + s.executionCode.length()
-                            + s.globalCleanupCode.length())
+                        s.getLocalSetupCode().length()
+                            + s.getExecutionCode().length()
+                            + s.getGlobalCleanupCode().length())
                 .sum()
             * 2;
     int iterationCount = iterationSize == 0 ? 1 : (sizeLimit - overheadSize) / iterationSize;
 
-    long setupGas = HARNESS_OVERHEAD_ONE_TIME + steps.stream().mapToLong(s -> s.gasCostFirst).sum();
+    long setupGas = HARNESS_OVERHEAD_ONE_TIME + steps.stream().mapToLong(Step::getGasOverhead).sum();
     long gasForLoops = gasLimit - setupGas;
-    long gasPerIteration = (steps.stream().mapToLong(s -> s.gasCost).sum());
+    long gasPerIteration = (steps.stream().mapToLong(Step::getGasCost).sum());
 
     long iterationGas = HARNESS_OVERHEAD_EACH_LOOP + gasPerIteration * iterationCount;
     while (iterationGas > gasForLoops && iterationCount > 1) {
       iterationCount /= 2;
-      iterationGas = gasPerIteration * iterationCount;
+      iterationGas = HARNESS_OVERHEAD_EACH_LOOP + gasPerIteration * iterationCount;
     }
     long totalLoops = gasForLoops / iterationGas;
-    System.out.printf(
-        "unroll: %d\ttotal loops: %d\tgasLoop: %d\tleftoverGas: %d\tgas/iter: %d\tgas for loop: %d\t",
-        iterationCount,
-        totalLoops,
-        iterationGas,
-        gasLimit - setupGas - iterationGas,
-        gasPerIteration,
-        gasForLoops);
 
     for (int i = 0; i < iterationCount; i++) {
       // weaving setup doesn't work well with dup and swap
@@ -86,9 +98,9 @@ public class CodeGenerator {
       //   case 0 ->
       steps.forEach(
           step -> {
-            inner.append(step.localSetupCode);
-            inner.append(step.executionCode);
-            inner.append(step.localCleanupCode);
+            inner.append(step.getLocalSetupCode());
+            inner.append(step.getExecutionCode());
+            inner.append(step.getLocalCleanupCode());
           });
       //   case 1 -> {
       //     backwardsSteps.forEach(step -> inner.append(step.localSetupCode));

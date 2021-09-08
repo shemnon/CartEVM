@@ -168,14 +168,49 @@ public class Step {
   public static final String OP_DELEGATECALL = "F4";
   public static final String OP_CREATE2 = "F5";
   public static final String OP_STATICCALL = "FA";
-  public static final String OP_REVERT = "FD";
-  public static final String OP_INVALID = "FE";
+  //  public static final String OP_REVERT = "FD";
+  //  public static final String OP_INVALID = "FE";
   public static final String OP_SELFDESTRUCT = "FF";
 
   public static final List<Step> steps = new ArrayList<>();
   static final int NUM_PUSH0 = Integer.parseInt(OP_PUSH1, 16) - 1;
   static final int NUM_DUP0 = Integer.parseInt(OP_DUP1, 16) - 1;
   static final int NUM_SWAP0 = Integer.parseInt(OP_SWAP1, 16) - 1;
+
+  /*
+   * Memory Reservations
+   * start address and the next 32 bytes
+   *
+   * 0x20   - SHA3
+   * 0x40   - CALLDATACOPY
+   * 0x60   - CODECOPY
+   * 0x80   - EXTCODECOPY
+   * 0xA0   - RETURNDATACOPY
+   * 0xC0   - MLOAD
+   * 0xE0   - MSTORE
+   * 0x0100 - MSTORE8
+   * 0x0120 - LOG0
+   * 0x0140 - LOG1
+   * 0x0160 - LOG2
+   * 0x0180 - LOG3
+   * 0x01A0 - LOG4
+   * 0x01C0 - CREATE
+   * 0x01E0 - CALL args
+   * 0x0200 - CALL return
+   * 0x0220 - CALLCODE args
+   * 0x0240 - CALLCODE return
+   * skip   - RETURN
+   * 0x0260 - DELEGATECALL args
+   * 0x0280 - DELEGATECALL return
+   * 0x02A0 - CREATE2
+   * 0x02C0 - STATICCALL args
+   * 0x02C0 - STATICCALL return
+   * 0x0300 - SELFDESTRUCT contract
+   * 0x0320 - SELFDESTRUCT args
+   * 0x0340 - SELFDESTRUCT return
+   * 0x0360 - REVERT args
+   * 0x0380 - REVERT return
+   */
 
   static {
     String pushData = "0102030405060708091011121314151617181920212223242526272829303132";
@@ -262,7 +297,17 @@ public class Step {
             OP_POP,
             OP_SAR,
             11));
-    // TODO keccak
+    steps.add(
+        new Step(
+            "keccak",
+            push("FFEEDDCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100", "0200")
+                + OP_MSTORE,
+            "",
+            push("20", "20"),
+            OP_POP,
+            OP_SHA3,
+            44));
+
     steps.add(new Step("address", "", OP_POP, OP_ADDRESS, 4));
     steps.add(
         new Step(
@@ -272,21 +317,21 @@ public class Step {
     steps.add(new Step("callvalue", "", OP_POP, OP_CALLVALUE, 4));
     steps.add(new Step("calldataload", push("02"), OP_POP, OP_CALLDATALOAD, 8));
     steps.add(new Step("calldatasize", "", OP_POP, OP_CALLDATASIZE, 4));
-    steps.add(new Step("calldatacopy", push("20", "04", "40"), "", OP_CALLDATACOPY, 24));
+    steps.add(new Step("calldatacopy", push("40", "04", "40"), "", OP_CALLDATACOPY, 15, 2));
     steps.add(new Step("codesize", "", OP_POP, OP_CODESIZE, 4));
-    steps.add(new Step("codecopy", push("20", "04", "40"), "", OP_CODECOPY, 24));
+    steps.add(new Step("codecopy", push("60", "04", "40"), "", OP_CODECOPY, 15, 2));
     steps.add(new Step("gasprice", "", OP_POP, OP_GASPRICE, 4));
     steps.add(
         new Step(
             "extcodesize",
-            push("e713449c212d891357cc2966816b1d528cfb59e0"),
+            push("a94f5374fce5edbc8e2a8697c15331677e6ebf0b"),
             OP_POP,
             OP_EXTCODESIZE,
             705));
     steps.add(
         new Step(
             "extcodecopy",
-            push("20", "04", "40", "e713449c212d891357cc2966816b1d528cfb59e0"),
+            push("80", "04", "40", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b"),
             "",
             OP_EXTCODECOPY,
             712));
@@ -305,11 +350,11 @@ public class Step {
     steps.add(
         new Step(
             "returndatacopy",
-            push("20", "40", "00", "00", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b")
+            push("20", "A0", "00", "00", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b")
                 + OP_GAS
                 + OP_STATICCALL,
             "",
-            push("10", "00", "80"),
+            push("20", "00", "A0"),
             "",
             OP_RETURNDATACOPY,
             15,
@@ -317,7 +362,7 @@ public class Step {
     steps.add(
         new Step(
             "extcodehash",
-            push("e713449c212d891357cc2966816b1d528cfb59e0"),
+            push("a94f5374fce5edbc8e2a8697c15331677e6ebf0b"),
             OP_POP,
             OP_EXTCODEHASH,
             403));
@@ -385,56 +430,70 @@ public class Step {
 
     steps.add(
         new Step(
-            "log0", push(pushData, "0200") + OP_MSTORE, "", push("20", "0200"), "", OP_LOG0, 697));
+            "log0", push(pushData, "0120") + OP_MSTORE, "", push("20", "0120"), "", OP_LOG0, 697));
     steps.add(
         new Step(
             "log1",
-            push(pushData, "0200") + OP_MSTORE,
+            push(pushData, "0140") + OP_MSTORE,
             "",
-            push(pushData, "20", "0200"),
+            push(pushData, "20", "0140"),
             "",
             OP_LOG1,
             1075));
     steps.add(
         new Step(
             "log2",
-            push(pushData, "0200") + OP_MSTORE,
+            push(pushData, "0160") + OP_MSTORE,
             "",
-            push(pushData, pushData, "20", "0200"),
+            push(pushData, pushData, "20", "0160"),
             "",
             OP_LOG2,
             1453));
     steps.add(
         new Step(
             "log3",
-            push(pushData, "0200") + OP_MSTORE,
+            push(pushData, "0180") + OP_MSTORE,
             "",
-            push(pushData, pushData, pushData, "20", "0200"),
+            push(pushData, pushData, pushData, "20", "0180"),
             "",
             OP_LOG3,
             1831));
     steps.add(
         new Step(
             "log4",
-            push(pushData, "0200") + OP_MSTORE,
+            push(pushData, "01A0") + OP_MSTORE,
             "",
-            push(pushData, pushData, pushData, pushData, "20", "0200"),
+            push(pushData, pushData, pushData, pushData, "20", "01A0"),
             "",
             OP_LOG4,
             2209));
 
-    steps.add(new Step("create", OP_CODESIZE + push("00", "00"), OP_POP, OP_CREATE, 32013));
+    steps.add(
+        new Step(
+            "create",
+            push(OP_CALLER + OP_SELFDESTRUCT, "01c0") + OP_MSTORE,
+            "",
+            push("01C0", "02", "00"),
+            OP_POP,
+            OP_CREATE,
+            32013));
     steps.add(
         new Step(
             "call",
-            push("20", "40", "20", "20", "00", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b") + OP_GAS,
+            push("1337", "0200") + OP_MSTORE,
+            "",
+            push("20", "01E0", "20", "0200", "00", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b")
+                + OP_GAS,
             OP_POP,
             OP_CALL,
             745));
     steps.add(
         new Step(
             "callcode",
-            push("20", "40", "20", "20", "00", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b") + OP_GAS,
+            push("6a51", "0240") + OP_MSTORE,
+            "",
+            push("20", "0220", "20", "0240", "00", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b")
+                + OP_GAS,
             OP_POP,
             OP_CALLCODE,
             745));
@@ -442,22 +501,72 @@ public class Step {
     steps.add(
         new Step(
             "delegatecall",
-            push("20", "40", "00", "20", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b") + OP_GAS,
+            push("E11E", "0280") + OP_MSTORE,
+            "",
+            push("20", "0260", "00", "0280", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b") + OP_GAS,
             OP_POP,
             OP_DELEGATECALL,
             745));
     steps.add(
         new Step(
-            "create2", push("00") + OP_CODESIZE + push("00", "00"), OP_POP, OP_CREATE2, 32022));
+            "create2",
+            push(OP_CALLER + OP_SELFDESTRUCT, "02A0") + OP_MSTORE,
+            "",
+            push("5a", "02A0", "02", "00"),
+            OP_POP,
+            OP_CREATE2,
+            32022));
     steps.add(
         new Step(
             "staticcall",
-            push("20", "40", "20", "20", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b") + OP_GAS,
+            push("C0DE", "02E0") + OP_MSTORE,
+            "",
+            push("20", "02C0", "20", "02E0", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b") + OP_GAS,
             OP_POP,
             OP_STATICCALL,
             745));
-    // TODO REVERT
-    // TODO SELFDESTRUCT
+    steps.add(
+        new Step(
+            "revert",
+            push("1337", "0360") + OP_MSTORE,
+            "",
+            push(
+                "20",
+                "0380",
+                "20",
+                "0360",
+                "00",
+                "7265766572742052455645525420726576657274",
+                "0400"),
+            OP_POP,
+            OP_CALL,
+            1698));
+    steps.add(
+        new Step(
+            "selfdestruct",
+            push(
+                    "20",
+                    "0340",
+                    "20",
+                    "0320",
+                    "00",
+                    push("02")
+                        + OP_DUP1
+                        + push("0C", "00")
+                        + OP_CODECOPY
+                        + push("00")
+                        + OP_RETURN
+                        + "FE"
+                        + OP_CALLER
+                        + OP_SELFDESTRUCT,
+                    "0300")
+                + OP_MSTORE
+                + push("0E", "0312", "00")
+                + OP_CREATE
+                + OP_GAS,
+            "",
+            OP_CALL,
+            38129));
 
     steps.add(new Step("extcodesize_gas", OP_GAS, OP_POP, OP_EXTCODESIZE, 705));
     steps.add(new Step("extcodehash_gas", OP_GAS, OP_POP, OP_EXTCODEHASH, 405));
@@ -468,14 +577,14 @@ public class Step {
     steps.add(new Step("sstore_gas", OP_GAS + OP_GAS, "", OP_SSTORE, 22104));
   }
 
-  final String name;
-  final String globalSetupCode;
-  final String globalCleanupCode;
-  final String localSetupCode;
-  final String localCleanupCode;
-  final String executionCode;
-  final int gasCost;
-  final int gasCostFirst;
+  final private String name;
+  final private String globalSetupCode;
+  final private String globalCleanupCode;
+  final private String localSetupCode;
+  final private String localCleanupCode;
+  final private String executionCode;
+  final private int gasCost;
+  final private int gasOverhead;
 
   public Step(
       String name,
@@ -492,8 +601,8 @@ public class Step {
       String localCleanupCode,
       String executionCode,
       int gasCost,
-      int gasCostFirst) {
-    this(name, "", "", localSetupCode, localCleanupCode, executionCode, gasCost, gasCostFirst);
+      int gasOverhead) {
+    this(name, "", "", localSetupCode, localCleanupCode, executionCode, gasCost, gasOverhead);
   }
 
   public Step(
@@ -523,7 +632,7 @@ public class Step {
       String localCleanupCode,
       String executionCode,
       int gasCost,
-      int gasCostFirst) {
+      int gasOverhead) {
     this.name = name;
     this.globalSetupCode = globalSetupCode;
     this.globalCleanupCode = globalCleanupCode;
@@ -531,7 +640,7 @@ public class Step {
     this.localCleanupCode = localCleanupCode;
     this.executionCode = executionCode;
     this.gasCost = gasCost;
-    this.gasCostFirst = gasCostFirst;
+    this.gasOverhead = gasOverhead;
   }
 
   static String push(String... values) {
@@ -571,5 +680,13 @@ public class Step {
 
   public String getExecutionCode() {
     return executionCode;
+  }
+
+  public int getGasCost() {
+    return gasCost;
+  }
+
+  public int getGasOverhead() {
+    return gasOverhead;
   }
 }

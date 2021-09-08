@@ -1,5 +1,25 @@
 package com.hedera.cartevm;
 
+/*-
+ * ‌
+ * CartEVM
+ * ​
+ * Copyright (C) 2021 Hedera Hashgraph, LLC
+ * ​
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ‍
+ */
+
 import com.google.common.base.Stopwatch;
 import com.hedera.cartevm.besu.SimpleBlockHeader;
 import com.hedera.cartevm.besu.SimpleWorld;
@@ -15,12 +35,14 @@ import org.apache.tuweni.units.bigints.UInt256;
 import org.hyperledger.besu.datatypes.Address;
 import org.hyperledger.besu.datatypes.Wei;
 import org.hyperledger.besu.evm.Code;
+import org.hyperledger.besu.evm.ContractCreationProcessor;
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.Gas;
 import org.hyperledger.besu.evm.MainnetEvms;
 import org.hyperledger.besu.evm.MainnetPrecompiledContracts;
 import org.hyperledger.besu.evm.MessageCallProcessor;
 import org.hyperledger.besu.evm.MessageFrame;
+import org.hyperledger.besu.evm.MutableAccount;
 import org.hyperledger.besu.evm.OperationTracer;
 import org.hyperledger.besu.evm.PrecompileContractRegistry;
 import org.hyperledger.besu.evm.WorldUpdater;
@@ -37,28 +59,36 @@ public class LocalRunner extends CodeGenerator {
 
   public void prexistingState(WorldUpdater worldUpdater, Bytes codeBytes) {
     worldUpdater.getOrCreate(SENDER).getMutable().setBalance(Wei.of(BigInteger.TWO.pow(20)));
-    worldUpdater.getOrCreate(RECEIVER).getMutable().setCode(codeBytes);
 
-    // for balance
-    worldUpdater
-        .getOrCreate(Address.fromHexString("0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b"))
-        .getMutable()
-        .setBalance(Wei.fromHexString("0x0ba1a9ce0ba1a9ce"));
-    // for extcode*
-    worldUpdater
-        .getOrCreate(Address.fromHexString("0xe713449c212d891357cc2966816b1d528cfb59e0"))
-        .getMutable()
-        .setCode(Bytes.fromHexString("0x600c606355600b606355600a60635500"));
-    // for returndata
-    worldUpdater
-        .getOrCreate(Address.fromHexString("0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b"))
-        .getMutable()
-        .setCode(Bytes.fromHexString("0x3360005260206000f3"));
+    MutableAccount receiver = worldUpdater.getOrCreate(RECEIVER).getMutable();
+    receiver.setCode(codeBytes);
     // for sload
-    worldUpdater
-        .getOrCreate(RECEIVER)
-        .getMutable()
-        .setStorageValue(UInt256.fromHexString("54"), UInt256.fromHexString("99"));
+    receiver.setStorageValue(UInt256.fromHexString("54"), UInt256.fromHexString("99"));
+
+    MutableAccount otherAccount =
+        worldUpdater
+            .getOrCreate(Address.fromHexString("0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b"))
+            .getMutable();
+    // for balance
+    otherAccount.setBalance(Wei.fromHexString("0x0ba1a9ce0ba1a9ce"));
+    // for extcode*, returndata*, and call*
+    otherAccount.setCode(Bytes.fromHexString("0x3360005260206000f3"));
+
+    MutableAccount revert =
+        worldUpdater
+            .getOrCreate(Address.fromHexString("0x7265766572742052455645525420726576657274"))
+            .getMutable();
+    revert.setBalance(Wei.fromHexString("0x0ba1a9ce0ba1a9ce"));
+    // for REVERT
+    revert.setCode(Bytes.fromHexString("0x6055605555604360a052600160a0FD"));
+
+    MutableAccount selfDestruct =
+        worldUpdater
+            .getOrCreate(Address.fromHexString("0x646573747275637473656c666465737472756374"))
+            .getMutable();
+    selfDestruct.setBalance(Wei.fromHexString("0x00"));
+    // for REVERT
+    revert.setCode(Bytes.fromHexString("0x33ff"));
   }
 
   public void execute(boolean verbose) {
@@ -77,7 +107,7 @@ public class LocalRunner extends CodeGenerator {
     final Stopwatch stopwatch = Stopwatch.createUnstarted();
     final Deque<MessageFrame> messageFrameStack = new ArrayDeque<>();
     final Gas initialGas = Gas.of(gasLimit * 2);
-    MessageFrame messageFrame =
+    MessageFrame initialMessageFrame =
         MessageFrame.builder()
             .type(MessageFrame.Type.MESSAGE_CALL)
             .messageFrameStack(messageFrameStack)
@@ -102,30 +132,36 @@ public class LocalRunner extends CodeGenerator {
             .miningBeneficiary(Address.ZERO)
             .blockHashLookup(h -> null)
             .build();
-    messageFrameStack.add(messageFrame);
+    messageFrameStack.add(initialMessageFrame);
 
     final MessageCallProcessor mcp = new MessageCallProcessor(evm, precompileContractRegistry);
+    final ContractCreationProcessor ccp =
+        new ContractCreationProcessor(evm.getGasCalculator(), evm, true, List.of(), 0);
     stopwatch.start();
     OperationTracer tracer = OperationTracer.NO_TRACING;
     while (!messageFrameStack.isEmpty()) {
-      mcp.process(messageFrameStack.peek(), tracer);
+      MessageFrame messageFrame = messageFrameStack.peek();
+      switch (messageFrame.getType()) {
+        case MESSAGE_CALL -> mcp.process(messageFrame, tracer);
+        case CONTRACT_CREATION -> ccp.process(messageFrame, tracer);
+      }
     }
     stopwatch.stop();
-    messageFrame.getRevertReason().ifPresent(b -> System.out.println("Reverted - " + b));
-    long gasUsed = initialGas.minus(messageFrame.getRemainingGas()).toLong();
+    initialMessageFrame.getRevertReason().ifPresent(b -> System.out.println("Reverted - " + b));
+    long gasUsed = initialGas.minus(initialMessageFrame.getRemainingGas()).toLong();
     long timeElapsedNanos = stopwatch.elapsed(TimeUnit.NANOSECONDS);
     if (verbose) {
       System.out.printf(
           "%s\t%s\t%,d\t%,.3f\t%,.0f\t%s%n",
           getName(),
-          messageFrame
+          initialMessageFrame
               .getExceptionalHaltReason()
               .map(Enum::toString)
-              .orElse(messageFrame.getState().toString()),
+              .orElse(initialMessageFrame.getState().toString()),
           gasUsed,
           timeElapsedNanos / 1000.0,
           gasUsed * 1_000_000_000.0 / timeElapsedNanos,
-          messageFrame.getRevertReason().orElse(Bytes.EMPTY).toUnprefixedHexString());
+          initialMessageFrame.getRevertReason().orElse(Bytes.EMPTY).toUnprefixedHexString());
     }
   }
 }
