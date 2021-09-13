@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import picocli.CommandLine;
 
 @CommandLine.Command(
@@ -57,6 +58,12 @@ public class CartEVM implements Runnable {
       paramLabel = "long",
       description = "Number of loop iterations")
   private final Long gasLimit = 10_000_000L;
+
+  @CommandLine.Option(
+      names = {"--steps-regexp"},
+      paramLabel = "regexp",
+      description = "RegExp of the steps to run")
+  private String stepsRegExp = ".*";
 
   @CommandLine.Option(
       names = {"--size-limit"},
@@ -150,7 +157,13 @@ public class CartEVM implements Runnable {
   public void run() {
     try {
       for (int i = repeat; i > 0; i--) {
-        runCase(Step.steps, new ArrayList<>(steps), steps, i == 1);
+        runCase(
+            Step.steps.stream()
+                .filter(s -> s.getName().matches(stepsRegExp))
+                .collect(Collectors.toList()),
+            new ArrayList<>(steps),
+            steps,
+            i == 1);
       }
       if (hedera) {
         System.out.println("Hedera Execution Not Implemented Yet");

@@ -22,9 +22,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.hyperledger.besu.datatypes.Address;
 import org.hyperledger.besu.datatypes.Wei;
-import org.hyperledger.besu.evm.Account;
-import org.hyperledger.besu.evm.EvmAccount;
-import org.hyperledger.besu.evm.WorldUpdater;
+import org.hyperledger.besu.evm.account.Account;
+import org.hyperledger.besu.evm.account.EvmAccount;
+import org.hyperledger.besu.evm.worldstate.WorldUpdater;
 
 public class SimpleWorld implements WorldUpdater {
 

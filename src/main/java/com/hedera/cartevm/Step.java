@@ -311,15 +311,20 @@ public class Step {
     steps.add(new Step("address", "", OP_POP, OP_ADDRESS, 4));
     steps.add(
         new Step(
-            "balance", push("a94f5374fce5edbc8e2a8697c15331677e6ebf0b"), OP_POP, OP_BALANCE, 400));
+            "balance",
+            push("a94f5374fce5edbc8e2a8697c15331677e6ebf0b"),
+            OP_POP,
+            OP_BALANCE,
+            405,
+            2600));
     steps.add(new Step("origin", "", OP_POP, OP_ORIGIN, 4));
     steps.add(new Step("caller", "", OP_POP, OP_CALLER, 4));
     steps.add(new Step("callvalue", "", OP_POP, OP_CALLVALUE, 4));
     steps.add(new Step("calldataload", push("02"), OP_POP, OP_CALLDATALOAD, 8));
     steps.add(new Step("calldatasize", "", OP_POP, OP_CALLDATASIZE, 4));
-    steps.add(new Step("calldatacopy", push("40", "04", "40"), "", OP_CALLDATACOPY, 15, 2));
+    steps.add(new Step("calldatacopy", push("40", "04", "40"), "", OP_CALLDATACOPY, 18, 12));
     steps.add(new Step("codesize", "", OP_POP, OP_CODESIZE, 4));
-    steps.add(new Step("codecopy", push("60", "04", "40"), "", OP_CODECOPY, 15, 2));
+    steps.add(new Step("codecopy", push("60", "04", "40"), "", OP_CODECOPY, 21, 15));
     steps.add(new Step("gasprice", "", OP_POP, OP_GASPRICE, 4));
     steps.add(
         new Step(
@@ -331,10 +336,11 @@ public class Step {
     steps.add(
         new Step(
             "extcodecopy",
-            push("80", "04", "40", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b"),
+            push("80", "00", "40", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b"),
             "",
             OP_EXTCODECOPY,
-            712));
+            724,
+            2603));
     steps.add(
         new Step(
             "returndatasize",
@@ -365,16 +371,18 @@ public class Step {
             push("a94f5374fce5edbc8e2a8697c15331677e6ebf0b"),
             OP_POP,
             OP_EXTCODEHASH,
-            403));
+            405,
+            2600));
     steps.add(new Step("blockhash", push("1000"), OP_POP, OP_BLOCKHASH, 25));
     steps.add(new Step("coinbase", "", OP_POP, OP_COINBASE, 4));
     steps.add(new Step("timestamp", "", OP_POP, OP_TIMESTAMP, 4));
     steps.add(new Step("number", "", OP_POP, OP_NUMBER, 4));
     steps.add(new Step("difficulty", "", OP_POP, OP_DIFFICULTY, 4));
     steps.add(new Step("gaslimit", "", OP_POP, OP_GASLIMIT, 4));
-    steps.add(new Step("chainid", "", OP_POP, OP_CHAINID, 4));
-    steps.add(new Step("selfbalance", "", OP_POP, OP_SELFBALANCE, 7));
-    steps.add(new Step("basefee", "", OP_POP, OP_BASEFEE, 4));
+    // not in petersburg
+    //    steps.add(new Step("chainid", "", OP_POP, OP_CHAINID, 4));
+    //    steps.add(new Step("selfbalance", "", OP_POP, OP_SELFBALANCE, 7));
+    //    steps.add(new Step("basefee", "", OP_POP, OP_BASEFEE, 4));
     steps.add(new Step("pop", push("42"), "", OP_POP, 5));
     steps.add(
         new Step("mload", push("43", "a0") + OP_MSTORE, "", push("a0"), OP_POP, OP_MLOAD, 8, 9));
@@ -540,7 +548,7 @@ public class Step {
                 "0400"),
             OP_POP,
             OP_CALL,
-            1698));
+            1746));
     steps.add(
         new Step(
             "selfdestruct",
@@ -564,27 +572,28 @@ public class Step {
                 + push("0E", "0312", "00")
                 + OP_CREATE
                 + OP_GAS,
-            "",
+            OP_POP,
             OP_CALL,
             38129));
 
     steps.add(new Step("extcodesize_gas", OP_GAS, OP_POP, OP_EXTCODESIZE, 705));
     steps.add(new Step("extcodehash_gas", OP_GAS, OP_POP, OP_EXTCODEHASH, 405));
     steps.add(
-        new Step("extcodecopy_gas", push("40", "04", "20") + OP_GAS, "", OP_EXTCODECOPY, 705));
+        new Step(
+            "extcodecopy_gas", push("40", "04", "20") + OP_GAS, "", OP_EXTCODECOPY, 724, 2603));
     steps.add(new Step("balance_gas", OP_GAS, OP_POP, OP_BALANCE, 405));
     steps.add(new Step("sload_gas", OP_GAS, OP_POP, OP_SLOAD, 205));
     steps.add(new Step("sstore_gas", OP_GAS + OP_GAS, "", OP_SSTORE, 22104));
   }
 
-  final private String name;
-  final private String globalSetupCode;
-  final private String globalCleanupCode;
-  final private String localSetupCode;
-  final private String localCleanupCode;
-  final private String executionCode;
-  final private int gasCost;
-  final private int gasOverhead;
+  private final String name;
+  private final String globalSetupCode;
+  private final String globalCleanupCode;
+  private final String localSetupCode;
+  private final String localCleanupCode;
+  private final String executionCode;
+  private final int gasCost;
+  private final int gasOverhead;
 
   public Step(
       String name,

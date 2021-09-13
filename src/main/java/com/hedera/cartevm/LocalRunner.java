@@ -35,17 +35,17 @@ import org.apache.tuweni.units.bigints.UInt256;
 import org.hyperledger.besu.datatypes.Address;
 import org.hyperledger.besu.datatypes.Wei;
 import org.hyperledger.besu.evm.Code;
-import org.hyperledger.besu.evm.ContractCreationProcessor;
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.Gas;
-import org.hyperledger.besu.evm.MainnetEvms;
-import org.hyperledger.besu.evm.MainnetPrecompiledContracts;
-import org.hyperledger.besu.evm.MessageCallProcessor;
-import org.hyperledger.besu.evm.MessageFrame;
-import org.hyperledger.besu.evm.MutableAccount;
-import org.hyperledger.besu.evm.OperationTracer;
-import org.hyperledger.besu.evm.PrecompileContractRegistry;
-import org.hyperledger.besu.evm.WorldUpdater;
+import org.hyperledger.besu.evm.MainnetEVMs;
+import org.hyperledger.besu.evm.account.MutableAccount;
+import org.hyperledger.besu.evm.frame.MessageFrame;
+import org.hyperledger.besu.evm.precompile.MainnetPrecompiledContracts;
+import org.hyperledger.besu.evm.precompile.PrecompileContractRegistry;
+import org.hyperledger.besu.evm.processor.ContractCreationProcessor;
+import org.hyperledger.besu.evm.processor.MessageCallProcessor;
+import org.hyperledger.besu.evm.tracing.OperationTracer;
+import org.hyperledger.besu.evm.worldstate.WorldUpdater;
 
 public class LocalRunner extends CodeGenerator {
 
@@ -100,13 +100,13 @@ public class LocalRunner extends CodeGenerator {
     prexistingState(worldUpdater, codeBytes);
 
     // final EVM evm = MainnetEvms.london();
-    final EVM evm = MainnetEvms.petersburg();
+    final EVM evm = MainnetEVMs.petersburg();
     final PrecompileContractRegistry precompileContractRegistry = new PrecompileContractRegistry();
     MainnetPrecompiledContracts.populateForIstanbul(
         precompileContractRegistry, evm.getGasCalculator());
     final Stopwatch stopwatch = Stopwatch.createUnstarted();
     final Deque<MessageFrame> messageFrameStack = new ArrayDeque<>();
-    final Gas initialGas = Gas.of(gasLimit * 2);
+    final Gas initialGas = Gas.of(gasLimit);
     MessageFrame initialMessageFrame =
         MessageFrame.builder()
             .type(MessageFrame.Type.MESSAGE_CALL)

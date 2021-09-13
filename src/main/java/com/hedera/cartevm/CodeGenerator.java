@@ -57,7 +57,7 @@ public class CodeGenerator {
   }
 
   String getName() {
-    return steps.stream().map(Step::getName).collect(Collectors.joining("_"));
+    return steps.stream().map(Step::getName).collect(Collectors.joining("__"));
   }
 
   public String generate(String template) {
@@ -81,7 +81,8 @@ public class CodeGenerator {
             * 2;
     int iterationCount = iterationSize == 0 ? 1 : (sizeLimit - overheadSize) / iterationSize;
 
-    long setupGas = HARNESS_OVERHEAD_ONE_TIME + steps.stream().mapToLong(Step::getGasOverhead).sum();
+    long setupGas =
+        HARNESS_OVERHEAD_ONE_TIME + steps.stream().mapToLong(Step::getGasOverhead).sum();
     long gasForLoops = gasLimit - setupGas;
     long gasPerIteration = (steps.stream().mapToLong(Step::getGasCost).sum());
 
