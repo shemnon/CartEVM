@@ -28,6 +28,9 @@ import java.util.List;
 
 public class Step {
 
+  public static final String RETURN_CONTRACT_ADDRESS = "72657475726e207465737420636f6e7472616374";
+  public static final String REVERT_CONTRACT_ADDRESS = "726576657274207465737420636f6e7472616374";
+
   //  public static final String OP_STOP = "00";
   public static final String OP_ADD = "01";
   public static final String OP_MUL = "02";
@@ -309,14 +312,7 @@ public class Step {
             44));
 
     steps.add(new Step("address", "", OP_POP, OP_ADDRESS, 4));
-    steps.add(
-        new Step(
-            "balance",
-            push("a94f5374fce5edbc8e2a8697c15331677e6ebf0b"),
-            OP_POP,
-            OP_BALANCE,
-            405,
-            2600));
+    steps.add(new Step("balance", push(RETURN_CONTRACT_ADDRESS), OP_POP, OP_BALANCE, 405, 2600));
     steps.add(new Step("origin", "", OP_POP, OP_ORIGIN, 4));
     steps.add(new Step("caller", "", OP_POP, OP_CALLER, 4));
     steps.add(new Step("callvalue", "", OP_POP, OP_CALLVALUE, 4));
@@ -326,17 +322,11 @@ public class Step {
     steps.add(new Step("codesize", "", OP_POP, OP_CODESIZE, 4));
     steps.add(new Step("codecopy", push("60", "04", "40"), "", OP_CODECOPY, 21, 15));
     steps.add(new Step("gasprice", "", OP_POP, OP_GASPRICE, 4));
-    steps.add(
-        new Step(
-            "extcodesize",
-            push("a94f5374fce5edbc8e2a8697c15331677e6ebf0b"),
-            OP_POP,
-            OP_EXTCODESIZE,
-            705));
+    steps.add(new Step("extcodesize", push(RETURN_CONTRACT_ADDRESS), OP_POP, OP_EXTCODESIZE, 705));
     steps.add(
         new Step(
             "extcodecopy",
-            push("80", "00", "40", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b"),
+            push("80", "00", "40", RETURN_CONTRACT_ADDRESS),
             "",
             OP_EXTCODECOPY,
             724,
@@ -344,9 +334,7 @@ public class Step {
     steps.add(
         new Step(
             "returndatasize",
-            push("20", "40", "00", "00", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b")
-                + OP_GAS
-                + OP_STATICCALL,
+            push("20", "40", "00", "00", RETURN_CONTRACT_ADDRESS) + OP_GAS + OP_STATICCALL,
             "",
             "",
             OP_POP,
@@ -356,9 +344,7 @@ public class Step {
     steps.add(
         new Step(
             "returndatacopy",
-            push("20", "A0", "00", "00", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b")
-                + OP_GAS
-                + OP_STATICCALL,
+            push("20", "A0", "00", "00", RETURN_CONTRACT_ADDRESS) + OP_GAS + OP_STATICCALL,
             "",
             push("20", "00", "A0"),
             "",
@@ -366,13 +352,7 @@ public class Step {
             15,
             743));
     steps.add(
-        new Step(
-            "extcodehash",
-            push("a94f5374fce5edbc8e2a8697c15331677e6ebf0b"),
-            OP_POP,
-            OP_EXTCODEHASH,
-            405,
-            2600));
+        new Step("extcodehash", push(RETURN_CONTRACT_ADDRESS), OP_POP, OP_EXTCODEHASH, 405, 2600));
     steps.add(new Step("blockhash", push("1000"), OP_POP, OP_BLOCKHASH, 25));
     steps.add(new Step("coinbase", "", OP_POP, OP_COINBASE, 4));
     steps.add(new Step("timestamp", "", OP_POP, OP_TIMESTAMP, 4));
@@ -490,8 +470,7 @@ public class Step {
             "call",
             push("1337", "0200") + OP_MSTORE,
             "",
-            push("20", "01E0", "20", "0200", "00", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b")
-                + OP_GAS,
+            push("20", "01E0", "20", "0200", "00", RETURN_CONTRACT_ADDRESS) + OP_GAS,
             OP_POP,
             OP_CALL,
             745));
@@ -500,8 +479,7 @@ public class Step {
             "callcode",
             push("6a51", "0240") + OP_MSTORE,
             "",
-            push("20", "0220", "20", "0240", "00", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b")
-                + OP_GAS,
+            push("20", "0220", "20", "0240", "00", RETURN_CONTRACT_ADDRESS) + OP_GAS,
             OP_POP,
             OP_CALLCODE,
             745));
@@ -511,7 +489,7 @@ public class Step {
             "delegatecall",
             push("E11E", "0280") + OP_MSTORE,
             "",
-            push("20", "0260", "00", "0280", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b") + OP_GAS,
+            push("20", "0260", "00", "0280", RETURN_CONTRACT_ADDRESS) + OP_GAS,
             OP_POP,
             OP_DELEGATECALL,
             745));
@@ -529,7 +507,7 @@ public class Step {
             "staticcall",
             push("C0DE", "02E0") + OP_MSTORE,
             "",
-            push("20", "02C0", "20", "02E0", "a94f5374fce5edbc8e2a8697c15331677e6ebf0b") + OP_GAS,
+            push("20", "02C0", "20", "02E0", RETURN_CONTRACT_ADDRESS) + OP_GAS,
             OP_POP,
             OP_STATICCALL,
             745));
@@ -538,14 +516,7 @@ public class Step {
             "revert",
             push("1337", "0360") + OP_MSTORE,
             "",
-            push(
-                "20",
-                "0380",
-                "20",
-                "0360",
-                "00",
-                "7265766572742052455645525420726576657274",
-                "0400"),
+            push("20", "0380", "20", "0360", "00", REVERT_CONTRACT_ADDRESS, "0400"),
             OP_POP,
             OP_CALL,
             1746));

@@ -55,9 +55,15 @@ public class FillerGenerator extends CodeGenerator {
             nonce: 1
             storage: {}
 
-          a94f5374fce5edbc8e2a8697c15331677e6ebf0b:
+          72657475726e207465737420636f6e7472616374:
             balance: '0x0ba1a9ce0ba1a9ce'
-            code: '0x'
+            code: '0x3360005260206000f3'
+            nonce: '0'
+            storage: {}
+
+          726576657274207465737420636f6e7472616374:
+            balance: '0x0ba1a9ce0ba1a9ce'
+            code: '0x6055605555604360a052600160a0FD'
             nonce: '0'
             storage: {}
 

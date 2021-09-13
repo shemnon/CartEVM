@@ -20,6 +20,9 @@ package com.hedera.cartevm;
  * ‍
  */
 
+import static com.hedera.cartevm.Step.RETURN_CONTRACT_ADDRESS;
+import static com.hedera.cartevm.Step.REVERT_CONTRACT_ADDRESS;
+
 import com.google.common.base.Stopwatch;
 import com.hedera.cartevm.besu.SimpleBlockHeader;
 import com.hedera.cartevm.besu.SimpleWorld;
@@ -66,29 +69,17 @@ public class LocalRunner extends CodeGenerator {
     receiver.setStorageValue(UInt256.fromHexString("54"), UInt256.fromHexString("99"));
 
     MutableAccount otherAccount =
-        worldUpdater
-            .getOrCreate(Address.fromHexString("0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b"))
-            .getMutable();
+        worldUpdater.getOrCreate(Address.fromHexString(RETURN_CONTRACT_ADDRESS)).getMutable();
     // for balance
     otherAccount.setBalance(Wei.fromHexString("0x0ba1a9ce0ba1a9ce"));
     // for extcode*, returndata*, and call*
     otherAccount.setCode(Bytes.fromHexString("0x3360005260206000f3"));
 
     MutableAccount revert =
-        worldUpdater
-            .getOrCreate(Address.fromHexString("0x7265766572742052455645525420726576657274"))
-            .getMutable();
+        worldUpdater.getOrCreate(Address.fromHexString(REVERT_CONTRACT_ADDRESS)).getMutable();
     revert.setBalance(Wei.fromHexString("0x0ba1a9ce0ba1a9ce"));
     // for REVERT
     revert.setCode(Bytes.fromHexString("0x6055605555604360a052600160a0FD"));
-
-    MutableAccount selfDestruct =
-        worldUpdater
-            .getOrCreate(Address.fromHexString("0x646573747275637473656c666465737472756374"))
-            .getMutable();
-    selfDestruct.setBalance(Wei.fromHexString("0x00"));
-    // for REVERT
-    revert.setCode(Bytes.fromHexString("0x33ff"));
   }
 
   public void execute(boolean verbose) {
