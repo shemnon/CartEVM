@@ -103,11 +103,6 @@ public class CartEVM implements Runnable {
       description = "When generating bytecode, include the initcode")
   private final Boolean initcode = false;
 
-  @CommandLine.Option(
-      names = {"--hedera"},
-      description = "Execute hedera test instance")
-  private final Boolean hedera = false;
-
   public static void main(String[] args) {
     CartEVM cartevm = new CartEVM();
 
@@ -164,9 +159,6 @@ public class CartEVM implements Runnable {
             new ArrayList<>(steps),
             steps,
             i == 1);
-      }
-      if (hedera) {
-        System.out.println("Hedera Execution Not Implemented Yet");
       }
     } catch (IOException e) {
       e.printStackTrace();
