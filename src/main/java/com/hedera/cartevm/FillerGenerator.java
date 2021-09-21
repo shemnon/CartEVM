@@ -47,44 +47,48 @@ public class FillerGenerator extends CodeGenerator {
           cccccccccccccccccccccccccccccccccccccccc:
             balance: '0x0ba1a9ce0ba1a9ce'
             code: |
-              :yul \s"""
+              :yul\s"""
           + yulTemplate
           + """
-      \s
-
-            nonce: 1
+      \s     nonce: 1
             storage: {}
-
+      
           72657475726e207465737420636f6e7472616374:
             balance: '0x0ba1a9ce0ba1a9ce'
-            code: '0x3360005260206000f3'
+            code: :raw 0x3360005260206000f3
             nonce: '0'
             storage: {}
-
+      
           726576657274207465737420636f6e7472616374:
             balance: '0x0ba1a9ce0ba1a9ce'
-            code: '0x6055605555604360a052600160a0FD'
+            code: :raw 0x6055605555604360a052600160a0FD
             nonce: '0'
             storage: {}
-
+      
+          a94f5374Fce5edBC8E2a8697C15331677e6EbF0B:
+            balance: '0x0ba1a9ce0ba1a9ce'
+            code: ''
+            nonce: '0'
+            storage: {}
+      
         transaction:
           data:
           - :label test
           gasLimit:
-          - '%6$s'
+          - '30000000'
           gasPrice: '10'
           nonce: '0'
           to: cccccccccccccccccccccccccccccccccccccccc
           secretKey: "45a915e4d060149eb4365960e6a7a45f334393093061116b197e3240065ff2d8"
           value:
           - 0
-
+      
         expect:
           - indexes:
               data: !!int -1
               gas:  !!int -1
               value: !!int -1
-
+      
             network:
               - '>=Istanbul'
             result:

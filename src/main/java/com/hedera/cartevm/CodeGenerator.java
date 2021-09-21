@@ -36,15 +36,15 @@ public class CodeGenerator {
 
   static final String yulTemplate =
       """
-			{
-			  // %1$s
-			  %3$s
-			  for { let i := 0 } lt(i, %2$s) { i := add(i, 1) } {
-				%4$s
-			  }
-			  %5$s
-			}
-			""";
+         {
+                   // %1$s
+                   %3$s
+                   for { let i := 0 } lt(i, %2$s) { i := add(i, 1) } {
+                     %4$s
+                   }
+                   %5$s
+                 }
+         """;
 
   final List<Step> steps;
   final long gasLimit;
