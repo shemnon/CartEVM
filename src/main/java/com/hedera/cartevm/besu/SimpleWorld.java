@@ -15,94 +15,95 @@
  */
 package com.hedera.cartevm.besu;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.hyperledger.besu.datatypes.Address;
 import org.hyperledger.besu.datatypes.Wei;
 import org.hyperledger.besu.evm.account.Account;
 import org.hyperledger.besu.evm.account.EvmAccount;
 import org.hyperledger.besu.evm.worldstate.WorldUpdater;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 public class SimpleWorld implements WorldUpdater {
 
-  SimpleWorld parent;
-  Map<Address, SimpleAccount> accounts = new HashMap<>();
+	SimpleWorld parent;
+	Map<Address, SimpleAccount> accounts = new HashMap<>();
 
-  public SimpleWorld() {
-    this(null);
-  }
+	public SimpleWorld() {
+		this(null);
+	}
 
-  public SimpleWorld(final SimpleWorld parent) {
-    this.parent = parent;
-  }
+	public SimpleWorld(final SimpleWorld parent) {
+		this.parent = parent;
+	}
 
-  @Override
-  public WorldUpdater updater() {
-    return new SimpleWorld(this);
-  }
+	@Override
+	public WorldUpdater updater() {
+		return new SimpleWorld(this);
+	}
 
-  @Override
-  public Account get(final Address address) {
-    if (accounts.containsKey(address)) {
-      return accounts.get(address);
-    } else if (parent != null) {
-      return parent.get(address);
-    } else {
-      return null;
-    }
-  }
+	@Override
+	public Account get(final Address address) {
+		if (accounts.containsKey(address)) {
+			return accounts.get(address);
+		} else if (parent != null) {
+			return parent.get(address);
+		} else {
+			return null;
+		}
+	}
 
-  @Override
-  public EvmAccount createAccount(final Address address, final long nonce, final Wei balance) {
-    SimpleAccount account = new SimpleAccount(address, nonce, balance);
-    accounts.put(address, account);
-    return account;
-  }
+	@Override
+	public EvmAccount createAccount(final Address address, final long nonce, final Wei balance) {
+		SimpleAccount account = new SimpleAccount(address, nonce, balance);
+		accounts.put(address, account);
+		return account;
+	}
 
-  @Override
-  public EvmAccount getAccount(final Address address) {
-    if (accounts.containsKey(address)) {
-      return accounts.get(address);
-    } else if (parent != null) {
-      return parent.getAccount(address);
-    } else {
-      return null;
-    }
-  }
+	@Override
+	public EvmAccount getAccount(final Address address) {
+		if (accounts.containsKey(address)) {
+			return accounts.get(address);
+		} else if (parent != null) {
+			return parent.getAccount(address);
+		} else {
+			return null;
+		}
+	}
 
-  @Override
-  public void deleteAccount(final Address address) {
-    accounts.put(address, null);
-  }
+	@Override
+	public void deleteAccount(final Address address) {
+		accounts.put(address, null);
+	}
 
-  @Override
-  public Collection<? extends Account> getTouchedAccounts() {
-    return accounts.values();
-  }
+	@Override
+	public Collection<? extends Account> getTouchedAccounts() {
+		return accounts.values();
+	}
 
-  @Override
-  public Collection<Address> getDeletedAccountAddresses() {
-    return accounts.entrySet().stream()
-        .filter(e -> e.getValue() == null)
-        .map(Map.Entry::getKey)
-        .collect(Collectors.toList());
-  }
+	@Override
+	public Collection<Address> getDeletedAccountAddresses() {
+		return accounts.entrySet().stream()
+				.filter(e -> e.getValue() == null)
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toList());
+	}
 
-  @Override
-  public void revert() {
-    accounts = new HashMap<>();
-  }
+	@Override
+	public void revert() {
+		accounts = new HashMap<>();
+	}
 
-  @Override
-  public void commit() {
-    parent.accounts.putAll(accounts);
-  }
+	@Override
+	public void commit() {
+		parent.accounts.putAll(accounts);
+	}
 
-  @Override
-  public Optional<WorldUpdater> parentUpdater() {
-    return Optional.empty();
-  }
+	@Override
+	public Optional<WorldUpdater> parentUpdater() {
+		return Optional.empty();
+	}
 }
