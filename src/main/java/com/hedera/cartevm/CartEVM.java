@@ -59,42 +59,50 @@ public class CartEVM implements Runnable {
 			paramLabel = "long",
 			description = "Number of loop iterations")
 	private final Long gasLimit = 10_000_000L;
+
 	@CommandLine.Option(
 			names = { "--size-limit" },
 			paramLabel = "long",
 			description = "max number of bytes for the _internal_ contract loop")
 	private final Integer sizeLimit = 5120;
+
 	@CommandLine.Option(
 			names = { "--steps" },
 			paramLabel = "int",
 			description = "Number of steps to combine per loop")
 	private final Integer steps = 2;
+
 	@CommandLine.Option(
 			names = { "--filler" },
 			description = "Generate Filler")
 	private final Boolean filler = false;
+
 	@CommandLine.Option(
 			names = { "--output-dir" },
 			paramLabel = "<dir>",
 			description = "Directory to write Ethereum test fillers")
 	private final File outDir = new File("vmCartEVM");
+
 	@CommandLine.Option(
 			names = { "--local" },
 			description = "Execute in embedded EVM")
 	private final Boolean local = false;
+
 	@CommandLine.Option(
 			names = { "--bytecode" },
 			description = "Output the bytecode")
 	private final Boolean bytecode = false;
+
 	@CommandLine.Option(
 			names = { "--initcode" },
 			description = "When generating bytecode, include the initcode")
 	private final Boolean initcode = false;
+
 	@CommandLine.Option(
 			names = { "--steps-regexp" },
 			paramLabel = "regexp",
 			description = "RegExp of the steps to run")
-	private final String stepsRegExp = ".*";
+	private String stepsRegExp = ".*";
 
 	public static void main(String[] args) {
 		CartEVM cartevm = new CartEVM();
