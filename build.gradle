@@ -8,7 +8,6 @@ group 'com.hedera.cartevm'
 version '0.0-SNAPSHOT'
 
 repositories {
-    mavenLocal()
     mavenCentral()
     maven { url "https://hyperledger.jfrog.io/hyperledger/besu-maven" }
 }
@@ -16,8 +15,11 @@ repositories {
 dependencies {
     implementation 'com.google.guava:guava:31.0.1-jre'
     implementation 'info.picocli:picocli:4.6.1'
-    implementation 'org.hyperledger.besu:evm:21.10.0-RC3-SNAPSHOT'
-    implementation 'org.hyperledger.besu:besu-datatypes:21.10.0-RC3-SNAPSHOT'
+    implementation 'org.hyperledger.besu:plugin-api:21.7.4'
+    implementation 'org.hyperledger.besu.internal:config:21.7.4'
+    implementation 'org.hyperledger.besu.internal:kvstore:21.7.4'
+    implementation 'org.hyperledger.besu.internal:metrics-core:21.7.4'
+    implementation 'org.hyperledger.besu.internal:core:21.7.4'
     implementation 'org.apache.tuweni:tuweni-bytes:2.0.0'
     implementation 'org.apache.tuweni:tuweni-units:2.0.0'
 }
