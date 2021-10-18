@@ -26,6 +26,7 @@ import com.hedera.cartevm.besu.SimpleWorld;
 import org.apache.tuweni.bytes.Bytes;
 import org.apache.tuweni.units.bigints.UInt256;
 import org.hyperledger.besu.datatypes.Address;
+import org.hyperledger.besu.datatypes.Hash;
 import org.hyperledger.besu.datatypes.Wei;
 import org.hyperledger.besu.evm.Code;
 import org.hyperledger.besu.evm.EVM;
@@ -34,7 +35,8 @@ import org.hyperledger.besu.evm.MainnetEVMs;
 import org.hyperledger.besu.evm.account.MutableAccount;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
-import org.hyperledger.besu.evm.gascalculator.PetersburgGasCalculator;
+import org.hyperledger.besu.evm.gascalculator.LondonGasCalculator;
+import org.hyperledger.besu.evm.internal.EvmConfiguration;
 import org.hyperledger.besu.evm.precompile.MainnetPrecompiledContracts;
 import org.hyperledger.besu.evm.precompile.PrecompileContractRegistry;
 import org.hyperledger.besu.evm.processor.ContractCreationProcessor;
@@ -94,11 +96,11 @@ public class LocalRunner extends CodeGenerator {
 		prexistingState(worldUpdater, codeBytes);
 
 		// final EVM evm = MainnetEvms.london();
-		GasCalculator petersburgGasCalculator = new PetersburgGasCalculator();
-		final EVM evm = MainnetEVMs.constantinople(petersburgGasCalculator);
+		GasCalculator londonGasCalculator = new LondonGasCalculator();
+		final EVM evm = MainnetEVMs.constantinople(londonGasCalculator, EvmConfiguration.DEFAULT);
 		final PrecompileContractRegistry precompileContractRegistry = new PrecompileContractRegistry();
 		MainnetPrecompiledContracts.populateForIstanbul(
-				precompileContractRegistry, petersburgGasCalculator);
+				precompileContractRegistry, londonGasCalculator);
 		final Stopwatch stopwatch = Stopwatch.createUnstarted();
 		final Deque<MessageFrame> messageFrameStack = new ArrayDeque<>();
 		final Gas initialGas = Gas.of(gasLimit);
@@ -120,7 +122,7 @@ public class LocalRunner extends CodeGenerator {
 												+ "00000000000000000000000000000000000000000000000002a34892d36d6c74"))
 						.value(Wei.ZERO)
 						.apparentValue(Wei.ZERO)
-						.code(new Code(codeBytes))
+						.code(new Code(codeBytes, Hash.hash(codeBytes)))
 						.blockValues(new SimpleBlockValues())
 						.depth(0)
 						.completer(c -> {
@@ -132,7 +134,7 @@ public class LocalRunner extends CodeGenerator {
 
 		final MessageCallProcessor mcp = new MessageCallProcessor(evm, precompileContractRegistry);
 		final ContractCreationProcessor ccp =
-				new ContractCreationProcessor(petersburgGasCalculator, evm, true, List.of(), 0);
+				new ContractCreationProcessor(londonGasCalculator, evm, true, List.of(), 0);
 		stopwatch.start();
 		OperationTracer tracer = OperationTracer.NO_TRACING;
 		while (!messageFrameStack.isEmpty()) {
@@ -149,10 +151,10 @@ public class LocalRunner extends CodeGenerator {
 		if (verbose) {
 			System.out.printf(
 					"%s\t%s\t%,d\t%,.3f\t%,.0f\t%s%n",
-					getName(),
+					getName().replace("__", "\t"),
 					initialMessageFrame
 							.getExceptionalHaltReason()
-							.map(Enum::toString)
+							.map(Object::toString)
 							.orElse(initialMessageFrame.getState().toString()),
 					gasUsed,
 					timeElapsedNanos / 1000.0,
