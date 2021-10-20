@@ -139,7 +139,7 @@ public class CartEVM implements Runnable {
 			createBytecode(chosen);
 			runLocal(chosen, verbose);
 		} else {
-			for (int i = start; start < candidates.size(); i++) {
+			for (int i = start; i < candidates.size(); i++) {
 				Step step = candidates.get(i);
 				chosen.add(step);
 				runCase(candidates, chosen, moreSteps - 1, verbose);
@@ -175,6 +175,7 @@ public class CartEVM implements Runnable {
 	public void run() {
 		try {
 			for (int i = repeat; i > 0; i--) {
+				LocalRunner.resetCumulative();
 				runCase(
 						stepsPartial,
 						Step.steps.stream()
@@ -183,6 +184,9 @@ public class CartEVM implements Runnable {
 						new ArrayList<>(steps),
 						steps,
 						verbose || i == 1);
+				if (local) {
+					LocalRunner.reportCumulative();
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

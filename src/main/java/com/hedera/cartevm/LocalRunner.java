@@ -62,6 +62,8 @@ public class LocalRunner extends CodeGenerator {
 	static final Address SENDER = Address.fromHexString("12345678");
 	static final Address RECEIVER = Address.fromHexString("9abcdef0");
 	final LoadingCache<String, String> bytecodeCache = CacheBuilder.newBuilder().initialCapacity(30_000).build(CacheLoader.from(this::compileYul));
+	static long cumulativeGas = 0L;
+	static long cumulativeNanos = 0L;
 
 	public LocalRunner(List<Step> steps, long gasLimit, int sizeLimit) {
 		super(steps, gasLimit, sizeLimit);
@@ -150,6 +152,8 @@ public class LocalRunner extends CodeGenerator {
 		initialMessageFrame.getRevertReason().ifPresent(b -> System.out.println("Reverted - " + b));
 		long gasUsed = initialGas.minus(initialMessageFrame.getRemainingGas()).toLong();
 		long timeElapsedNanos = stopwatch.elapsed(TimeUnit.NANOSECONDS);
+		cumulativeGas += gasUsed;
+		cumulativeNanos += timeElapsedNanos;
 		if (verbose) {
 			System.out.printf(
 					"%s\t%s\t%,d\t%,.3f\t%,.0f\t%s%n",
@@ -163,5 +167,18 @@ public class LocalRunner extends CodeGenerator {
 					gasUsed * 1_000_000_000.0 / timeElapsedNanos,
 					initialMessageFrame.getRevertReason().orElse(Bytes.EMPTY).toUnprefixedHexString());
 		}
+	}
+
+	public static void resetCumulative() {
+		cumulativeGas = 0L;
+		cumulativeNanos = 0L;
+	}
+
+	public static void reportCumulative() {
+		System.out.printf("%s\t\t%,d\t%,.3f\t%,.0f\t%n",
+				"cumulative",
+				cumulativeGas,
+				cumulativeNanos / 1000.0,
+				cumulativeGas * 1_000_000_000.0 / cumulativeNanos);
 	}
 }
