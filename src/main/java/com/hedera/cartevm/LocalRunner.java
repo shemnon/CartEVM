@@ -20,11 +20,9 @@ package com.hedera.cartevm;
  * ‍
  */
 
-import com.google.common.base.Stopwatch;
-import com.hedera.cartevm.besu.SimpleBlockValues;
-import com.hedera.cartevm.besu.SimpleWorld;
-import org.apache.tuweni.bytes.Bytes;
-import org.apache.tuweni.units.bigints.UInt256;
+import static com.hedera.cartevm.Step.RETURN_CONTRACT_ADDRESS;
+import static com.hedera.cartevm.Step.REVERT_CONTRACT_ADDRESS;
+
 import org.hyperledger.besu.datatypes.Address;
 import org.hyperledger.besu.datatypes.Hash;
 import org.hyperledger.besu.datatypes.Wei;
@@ -47,19 +45,23 @@ import org.hyperledger.besu.evm.worldstate.WorldUpdater;
 import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static com.hedera.cartevm.Step.RETURN_CONTRACT_ADDRESS;
-import static com.hedera.cartevm.Step.REVERT_CONTRACT_ADDRESS;
+import com.google.common.base.Stopwatch;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.hedera.cartevm.besu.SimpleBlockValues;
+import com.hedera.cartevm.besu.SimpleWorld;
+import org.apache.tuweni.bytes.Bytes;
+import org.apache.tuweni.units.bigints.UInt256;
 
 public class LocalRunner extends CodeGenerator {
 
 	static final Address SENDER = Address.fromHexString("12345678");
 	static final Address RECEIVER = Address.fromHexString("9abcdef0");
-	static final Map<String, String> bytecodeCache = new HashMap<>();
+	final LoadingCache<String, String> bytecodeCache = CacheBuilder.newBuilder().initialCapacity(30_000).build(CacheLoader.from(this::compileYul));
 
 	public LocalRunner(List<Step> steps, long gasLimit, int sizeLimit) {
 		super(steps, gasLimit, sizeLimit);
@@ -89,7 +91,7 @@ public class LocalRunner extends CodeGenerator {
 
 	public void execute(boolean verbose) {
 		String yul = generate(yulTemplate);
-		String bytecode = bytecodeCache.computeIfAbsent(yul, this::compileYul);
+		String bytecode = bytecodeCache.getUnchecked(yul);
 		Bytes codeBytes = Bytes.fromHexString(bytecode);
 
 		WorldUpdater worldUpdater = new SimpleWorld();
@@ -97,13 +99,13 @@ public class LocalRunner extends CodeGenerator {
 
 		// final EVM evm = MainnetEvms.london();
 		GasCalculator londonGasCalculator = new LondonGasCalculator();
-		final EVM evm = MainnetEVMs.constantinople(londonGasCalculator, EvmConfiguration.DEFAULT);
+		final EVM evm = MainnetEVMs.london(londonGasCalculator, BigInteger.TEN, EvmConfiguration.DEFAULT);
 		final PrecompileContractRegistry precompileContractRegistry = new PrecompileContractRegistry();
 		MainnetPrecompiledContracts.populateForIstanbul(
 				precompileContractRegistry, londonGasCalculator);
 		final Stopwatch stopwatch = Stopwatch.createUnstarted();
 		final Deque<MessageFrame> messageFrameStack = new ArrayDeque<>();
-		final Gas initialGas = Gas.of(gasLimit);
+		final Gas initialGas = Gas.of(gasLimit * 300);
 		MessageFrame initialMessageFrame =
 				MessageFrame.builder()
 						.type(MessageFrame.Type.MESSAGE_CALL)

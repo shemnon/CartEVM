@@ -73,6 +73,12 @@ public class CartEVM implements Runnable {
 	private final Integer steps = 2;
 
 	@CommandLine.Option(
+			names = { "--steps-resume" },
+			paramLabel = "int",
+			description = "Number of first steps to start on")
+	private final Integer stepsPartial = 0;
+
+	@CommandLine.Option(
 			names = { "--filler" },
 			description = "Generate Filler")
 	private final Boolean filler = false;
@@ -126,6 +132,22 @@ public class CartEVM implements Runnable {
 		}
 	}
 
+	public void runCase(int start, List<Step> candidates, List<Step> chosen, int moreSteps, boolean verbose)
+			throws IOException {
+		if (moreSteps < 1) {
+			createFiller(chosen, verbose);
+			createBytecode(chosen);
+			runLocal(chosen, verbose);
+		} else {
+			for (int i = start; start < candidates.size(); i++) {
+				Step step = candidates.get(i);
+				chosen.add(step);
+				runCase(candidates, chosen, moreSteps - 1, verbose);
+				chosen.remove(chosen.size() - 1);
+			}
+		}
+	}
+
 	private void createFiller(List<Step> chosen, boolean verbose) throws IOException {
 		if (!filler) {
 			return;
@@ -154,6 +176,7 @@ public class CartEVM implements Runnable {
 		try {
 			for (int i = repeat; i > 0; i--) {
 				runCase(
+						stepsPartial,
 						Step.steps.stream()
 								.filter(s -> s.getName().matches(stepsRegExp))
 								.collect(Collectors.toList()),
