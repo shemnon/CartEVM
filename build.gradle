@@ -11,15 +11,19 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven { url "https://hyperledger.jfrog.io/hyperledger/besu-maven" }
+    maven {
+        url 'https://artifacts.consensys.net/public/maven/maven/'
+        content { includeGroupByRegex('tech\\.pegasys(\\..*)?') }
+    }
 }
 
 dependencies {
     implementation 'com.google.guava:guava:31.0.1-jre'
     implementation 'info.picocli:picocli:4.6.1'
-    implementation 'org.hyperledger.besu:evm:21.10.0-RC3-SNAPSHOT'
-    implementation 'org.hyperledger.besu:besu-datatypes:21.10.0-RC3-SNAPSHOT'
-    implementation 'org.apache.tuweni:tuweni-bytes:2.0.0'
-    implementation 'org.apache.tuweni:tuweni-units:2.0.0'
+    implementation 'org.hyperledger.besu:evm:23.1.2'
+    implementation 'org.hyperledger.besu:besu-datatypes:23.1.2'
+    implementation 'org.apache.tuweni:tuweni-bytes:2.3.0'
+    implementation 'org.apache.tuweni:tuweni-units:2.3.0'
 }
 
 spotless {
@@ -27,7 +31,7 @@ spotless {
         // This path needs to be relative to each project
         target '**/src/*/java/**/*.java'
         removeUnusedImports()
-        googleJavaFormat('1.10.0')
+        googleJavaFormat('1.16.0')
         trimTrailingWhitespace()
         endWithNewline()
     }
@@ -36,4 +40,8 @@ spotless {
 application {
     mainClass = 'com.hedera.cartevm.CartEVM'
     applicationName = 'cartevm'
+}
+
+tasks.register('benchmarkBesu', JavaExec) {
+    args("--local", "--steps", "1", "--repeat", "2", "--gas-limit", "30000000")
 }

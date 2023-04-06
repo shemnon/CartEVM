@@ -15,36 +15,36 @@
  */
 package com.hedera.cartevm.besu;
 
+import java.util.Optional;
 import org.apache.tuweni.bytes.Bytes;
 import org.apache.tuweni.units.bigints.UInt256;
+import org.hyperledger.besu.datatypes.Wei;
 import org.hyperledger.besu.evm.frame.BlockValues;
-
-import java.util.Optional;
 
 public class SimpleBlockValues implements BlockValues {
 
-	@Override
-	public Bytes getDifficultyBytes() {
-		return UInt256.ZERO;
-	}
+  @Override
+  public Bytes getDifficultyBytes() {
+    return UInt256.ZERO;
+  }
 
-	@Override
-	public long getNumber() {
-		return 0;
-	}
+  @Override
+  public long getNumber() {
+    return 0;
+  }
 
-	@Override
-	public long getGasLimit() {
-		return 0;
-	}
+  @Override
+  public long getGasLimit() {
+    return 0;
+  }
 
-	@Override
-	public long getTimestamp() {
-		return 0;
-	}
+  @Override
+  public long getTimestamp() {
+    return 0;
+  }
 
-	@Override
-	public Optional<Long> getBaseFee() {
-		return Optional.of(7L);
-	}
+  @Override
+  public Optional<Wei> getBaseFee() {
+    return Optional.of(Wei.of(7L));
+  }
 }

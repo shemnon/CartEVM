@@ -8,32 +8,32 @@ import java.util.List;
 
 public class ByteCodeOutput extends CodeGenerator {
 
-	static final String loaderTemplate =
-			"608060405234801561001057600080fd5b5061%04x806100206000396000f3fe";
+  static final String loaderTemplate =
+      "608060405234801561001057600080fd5b5061%04x806100206000396000f3fe";
 
-	final boolean initCode;
+  final boolean initCode;
 
-	public ByteCodeOutput(
-			final List<Step> steps, final boolean initCode, final long gasLimit, final int sizeLimit) {
-		super(steps, gasLimit, sizeLimit);
-		this.initCode = initCode;
-	}
+  public ByteCodeOutput(
+      final List<Step> steps, final boolean initCode, final long gasLimit, final int sizeLimit) {
+    super(steps, gasLimit, sizeLimit);
+    this.initCode = initCode;
+  }
 
-	public void createBytecode(File outDir) throws IOException {
-		createBytecode(outDir, getName() + ".bin");
-	}
+  public void createBytecode(File outDir) throws IOException {
+    createBytecode(outDir, getName() + ".bin");
+  }
 
-	public void createBytecode(File outDir, String fileName) throws IOException {
-		Path outputFile = outDir.toPath().resolve(fileName);
-		System.out.println(outputFile);
-		String yulCode = generate(yulTemplate);
-		String bytecode = compileYul(yulCode);
-		if (bytecode.length() > 0xffff) {
-			throw new RuntimeException(
-					"Resulting code of " + getName() + " is too big: " + bytecode.length() + " bytes");
-		}
+  public void createBytecode(File outDir, String fileName) throws IOException {
+    Path outputFile = outDir.toPath().resolve(fileName);
+    System.out.println(outputFile);
+    String yulCode = generate(yulTemplate);
+    String bytecode = compileYul(yulCode);
+    if (bytecode.length() > 0xffff) {
+      throw new RuntimeException(
+          "Resulting code of " + getName() + " is too big: " + bytecode.length() + " bytes");
+    }
 
-		Files.writeString(
-				outputFile, (initCode ? loaderTemplate.formatted(bytecode.length()) : "") + bytecode);
-	}
+    Files.writeString(
+        outputFile, (initCode ? loaderTemplate.formatted(bytecode.length()) : "") + bytecode);
+  }
 }
