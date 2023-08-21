@@ -133,7 +133,7 @@ public class CodeGenerator {
 
   public String compileYul(String yulSource) {
     try {
-      ProcessBuilder pb = new ProcessBuilder().command("solc", "--assemble", "-");
+      ProcessBuilder pb = new ProcessBuilder().command("solc", "--evm-version=paris", "--assemble", "-");
       Process p = pb.start();
       try {
         p.getOutputStream().write(yulSource.getBytes(StandardCharsets.UTF_8));

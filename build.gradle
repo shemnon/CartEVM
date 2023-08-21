@@ -20,10 +20,10 @@ repositories {
 dependencies {
     implementation 'com.google.guava:guava:31.0.1-jre'
     implementation 'info.picocli:picocli:4.6.1'
-    implementation 'org.hyperledger.besu:evm:23.1.2'
-    implementation 'org.hyperledger.besu:besu-datatypes:23.1.2'
-    implementation 'org.apache.tuweni:tuweni-bytes:2.3.0'
-    implementation 'org.apache.tuweni:tuweni-units:2.3.0'
+    implementation 'org.hyperledger.besu:evm:23.7.1-SNAPSHOT'
+    implementation 'org.hyperledger.besu:besu-datatypes:23.7.1-SNAPSHOT'
+    implementation 'io.tmio:tuweni-bytes:2.4.2'
+    implementation 'io.tmio:tuweni-units:2.4.2'
 }
 
 spotless {
@@ -43,5 +43,7 @@ application {
 }
 
 tasks.register('benchmarkBesu', JavaExec) {
-    args("--local", "--steps", "1", "--repeat", "2", "--gas-limit", "30000000")
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.hedera.cartevm.CartEVM'
+    args("--local", "--steps", "1", "--repeat", "5", "--gas-limit", "30000000")
 }
