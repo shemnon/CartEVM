@@ -27,10 +27,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.hedera.cartevm.besu.SimpleBlockValues;
-import com.hedera.cartevm.besu.SimpleWorld;
 import java.math.BigInteger;
-import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -42,6 +39,8 @@ import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.MainnetEVMs;
 import org.hyperledger.besu.evm.account.MutableAccount;
 import org.hyperledger.besu.evm.code.CodeFactory;
+import org.hyperledger.besu.evm.fluent.SimpleBlockValues;
+import org.hyperledger.besu.evm.fluent.SimpleWorld;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 import org.hyperledger.besu.evm.gascalculator.LondonGasCalculator;
@@ -67,22 +66,22 @@ public class LocalRunner extends CodeGenerator {
   }
 
   public void prexistingState(WorldUpdater worldUpdater, Bytes codeBytes) {
-    worldUpdater.getOrCreate(SENDER).getMutable().setBalance(Wei.of(BigInteger.TWO.pow(20)));
+    worldUpdater.getOrCreate(SENDER).setBalance(Wei.of(BigInteger.TWO.pow(20)));
 
-    MutableAccount receiver = worldUpdater.getOrCreate(RECEIVER).getMutable();
+    MutableAccount receiver = worldUpdater.getOrCreate(RECEIVER);
     receiver.setCode(codeBytes);
     // for sload
     receiver.setStorageValue(UInt256.fromHexString("54"), UInt256.fromHexString("99"));
 
     MutableAccount otherAccount =
-        worldUpdater.getOrCreate(Address.fromHexString(RETURN_CONTRACT_ADDRESS)).getMutable();
+        worldUpdater.getOrCreate(Address.fromHexString(RETURN_CONTRACT_ADDRESS));
     // for balance
     otherAccount.setBalance(Wei.fromHexString("0x0ba1a9ce0ba1a9ce"));
     // for extcode*, returndata*, and call*
     otherAccount.setCode(Bytes.fromHexString("0x3360005260206000f3"));
 
     MutableAccount revert =
-        worldUpdater.getOrCreate(Address.fromHexString(REVERT_CONTRACT_ADDRESS)).getMutable();
+        worldUpdater.getOrCreate(Address.fromHexString(REVERT_CONTRACT_ADDRESS));
     revert.setBalance(Wei.fromHexString("0x0ba1a9ce0ba1a9ce"));
     // for REVERT
     revert.setCode(Bytes.fromHexString("0x6055605555604360a052600160a0FD"));
@@ -104,12 +103,10 @@ public class LocalRunner extends CodeGenerator {
     MainnetPrecompiledContracts.populateForIstanbul(
         precompileContractRegistry, londonGasCalculator);
     final Stopwatch stopwatch = Stopwatch.createUnstarted();
-    final Deque<MessageFrame> messageFrameStack = new ArrayDeque<>();
     final long initialGas = gasLimit * 300;
     MessageFrame initialMessageFrame =
         MessageFrame.builder()
             .type(MessageFrame.Type.MESSAGE_CALL)
-            .messageFrameStack(messageFrameStack)
             .worldUpdater(worldUpdater.updater())
             .initialGas(initialGas)
             .contract(Address.ZERO)
@@ -126,12 +123,11 @@ public class LocalRunner extends CodeGenerator {
             .apparentValue(Wei.ZERO)
             .code(CodeFactory.createCode(codeBytes, 1, false))
             .blockValues(new SimpleBlockValues())
-            .depth(0)
             .completer(c -> {})
             .miningBeneficiary(Address.ZERO)
             .blockHashLookup(h -> null)
             .build();
-    messageFrameStack.add(initialMessageFrame);
+    final Deque<MessageFrame> messageFrameStack = initialMessageFrame.getMessageFrameStack();
 
     final MessageCallProcessor mcp = new MessageCallProcessor(evm, precompileContractRegistry);
     final ContractCreationProcessor ccp =
