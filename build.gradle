@@ -20,8 +20,8 @@ repositories {
 dependencies {
     implementation 'com.google.guava:guava:31.0.1-jre'
     implementation 'info.picocli:picocli:4.6.1'
-    implementation 'org.hyperledger.besu:evm:23.7.1-SNAPSHOT'
-    implementation 'org.hyperledger.besu:besu-datatypes:23.7.1-SNAPSHOT'
+    implementation 'org.hyperledger.besu:evm:23.7.0'
+    implementation 'org.hyperledger.besu:besu-datatypes:23.7.0'
     implementation 'io.tmio:tuweni-bytes:2.4.2'
     implementation 'io.tmio:tuweni-units:2.4.2'
 }
